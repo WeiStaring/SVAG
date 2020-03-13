@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>SVAG</title>
+    <link rel="shortcut icon" href="#" />
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/time.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css">
+    <!-- <link rel="stylesheet" href="css//leaflet.css" /> -->
+    <link rel="stylesheet" href="css/MarkerCluster.css" />
+    <link rel="stylesheet" href="css/MarkerCluster.Default.css" />
+    <script src="js/leaflet.js"></script><!--1.6.0-->
+    <script src="js/leaflet-heat.js"></script>
+    <script src="js/leaflet.markercluster-src.js"></script>
+    <script src="js/d3.v5.min.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/d3-simple-slider.min.js"></script>
+</head>
+
+<body>
+    <div class="main-frame">
+        <div class="map-frame" id="map"></div>
+        <div class="info-frame"></div>
+        <div class="time-frame">
+            <div class="time-slider"></div>
+            <div class="time-value"></div>
+            <div class="time-clock">
+                <div class="speed-cut-btn">
+                    <div class="speed-cut">
+                        <div class="line line_1"></div>
+                        <div class="line line_2"></div>
+                        <div class="line line_3"></div>
+                        <div class="line line_4"></div>
+                    </div>
+                </div>
+                <div class="clock-btn">
+                    <div class="pause">
+                        <div class="line line_1"></div>
+                        <div class="line line_2"></div>
+                    </div>
+                    <div class="play active">
+                        <div class="line line_1"></div>
+                        <div class="line line_2"></div>
+                        <div class="line line_3"></div>
+                    </div>
+                </div>
+                <div class="speed-up-btn">
+                    <div class="speed-up">
+                        <div class="line line_1"></div>
+                        <div class="line line_2"></div>
+                        <div class="line line_3"></div>
+                        <div class="line line_4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="js/map.js"></script>
+<script src="js/time.js"></script>
+
+</html>
