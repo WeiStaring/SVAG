@@ -1,0 +1,50 @@
+@font-face {
+  font-family: "iconfont";
+  src: url('iconfont.eot?t=1584705687807');
+  /* IE9 */
+  src: url('iconfont.eot?t=1584705687807#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('data:application/x-font-woff2;charset=utf-8;base64,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') format('woff2'), url('iconfont.woff?t=1584705687807') format('woff'), url('iconfont.ttf?t=1584705687807') format('truetype'), /* chrome, firefox, opera, Safari, Android, iOS 4.2+ */
+  url('iconfont.svg?t=1584705687807#iconfont') format('svg');
+  /* iOS 4.1- */
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* car */
+.icon-car:before {
+  content: "\e7b3";
+}
+
+/* walk */
+
+.icon-walk:before {
+  content: "\e6f6";
+}
+
+/* bike */
+
+.icon-bike:before {
+  content: "\e699";
+}
+
+/* bus */
+
+.icon-bus:before {
+  content: "\e65c";
+}
+
+.fa {
+  display: inline-block;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: inherit;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size:2em;
+}

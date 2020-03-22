@@ -1,3 +1,9 @@
 div.popup p {
     margin: 4px 0;
 }
+
+.leaflet-div-icon {
+    background: transparent!important;
+    border: none!important;
+    color: none;
+}

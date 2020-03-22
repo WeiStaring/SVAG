@@ -1,6 +1,6 @@
 //--创建时间范围--
 var dataTime = d3.range(0, 25).map(function (d) {
-    return new Date(2018, 10, 3, 0 + d, 0, 0);
+    return new Date(2018, 9, 3, 0 + d, 0, 0);
 });
 
 //--创建时间轴--
@@ -8,12 +8,12 @@ var sliderTime = d3
     .sliderBottom()
     .min(d3.min(dataTime))
     .max(d3.max(dataTime))
-    .step(1000)
+    .step(5 * 60 * 1000)
     .width(1000)
     .tickFormat(d3.timeFormat('%H:%M'))
     .tickValues(dataTime)
     .displayFormat(d3.timeFormat('%H:%M:%S'))
-    .default(new Date(2018, 10, 3, 0, 0, 0))
+    .default(d3.min(dataTime))
     .fill("#2196f3")//#2196f3
     .handle(
         d3.symbol()
@@ -22,9 +22,8 @@ var sliderTime = d3
     )
     .on('onchange', val => {
         d3.select('.time-value').text(d3.timeFormat('%H:%M:%S')(val));
-        var t = Math.ceil((val.getHours() * 60 + val.getMinutes()) / 5);
-        //根据时间轴更新热力图和标签图
-        getHeatmapData(t);
+        //根据时间轴更新地图数据
+        changeMapData(val);
     });
 
 //--绘制时间轴--
@@ -41,7 +40,7 @@ gTime.call(sliderTime);
 //--增加时钟--
 function addClock() {
     let curTime = sliderTime.value();
-    curTime.setMinutes(curTime.getMinutes() + 1);
+    curTime.setMinutes(curTime.getMinutes() + 5);
     if (curTime > sliderTime.domain()[1]) {
         curTime = sliderTime.domain()[0];
     }
