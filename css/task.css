@@ -1,0 +1,34 @@
+.main-frame>.task-frame>.title {
+    font-size: 17px;
+    margin: 10px 0 10px 0;
+}
+
+.main-frame>.task-frame>.bottom-line {
+    border-top: 2px dashed #cccccc;
+    height: 2px;
+    overflow: hidden;
+    margin:0 5px 10px 5px;
+}
+
+.main-frame>.task-frame>.task-button {
+    width: 120px;
+    height: 40px;
+    border-width: 0.5px;
+    border-radius: 10px;
+    background: steelwhite;
+    cursor: pointer;
+    color: rgb(89, 89, 89);
+    font-size: 14px;
+    text-align: center;
+    margin: 10px;
+}
+
+.main-frame>.task-frame>.task-button:hover {
+    border-color: rgb(24, 144, 255);
+    color: rgb(24, 144, 255);
+}
+
+.main-frame>.task-frame>.button-active {
+    color: white;
+    background: rgb(89, 89, 89);
+}

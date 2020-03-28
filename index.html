@@ -10,48 +10,27 @@
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/map.css">
     <link rel="stylesheet" href="css/time.css">
+    <link rel="stylesheet" href="css/task.css">
     <link rel="stylesheet" href="css/iconfont.css">
-    <link rel="stylesheet" href="css/MarkerCluster.css" />
-    <link rel="stylesheet" href="css/MarkerCluster.Default.css" />
     <link rel="stylesheet" href="css/leaflet-legend.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
     <script src="js/d3.v5.min.js"></script>
-    <script src="js/d3-simple-slider.min.js"></script>
-    <script src="js/d3-edgeBundle.js"></script>
     <script src="js/jquery.js"></script>
     <script src="js/leaflet.js"></script>
     <script src="js/leaflet-heat.js"></script>
-    <script src="js/leaflet.markercluster-src.js"></script>
-    <script src="js/leaflet.polylineDecorator.js"></script>
-    <script src="js/leaflet.motion.min.js"></script>
     <script src="js/leaflet-legend.js"></script>
     <script src="js/leaflet-d3-SvgOverlay.js"></script>
 </head>
 
 <body>
-    <div class="title">
-        <h2>信令数据可视分析系统</h2>
-    </div>
     <div class="main-frame">
-        <div class="nav-frame" id="nav">
-            <h2 style="text-align: center;">导航栏</h2>
-            <ul type='none' style="font-size:16px;padding-left:5px;margin-left:2px;margin-top:50px;">
-                <li>交通流量分析
-                    <ul>
-                        <li style="margin-top:10px;">流量热力分析</li>
-                    </ul>
-                </li>
-                <li style="margin-top:10px;">交通流动分析
-                    <ul>
-                        <li style="margin-top:10px;">出行驻留分析</li>
-                    </ul>
-                </li>
-                <li style="margin-top:10px;">出行方式分析
-                    <ul>
-                        <li style="margin-top:10px;">个体分析</li>
-                    </ul>
-                </li>
-            </ul>
+        <div class="task-frame">
+            <div class="title"><strong>信令数据分析系统</strong></div>
+            <div class="bottom-line"></div>
+            <button type="button" class="task-button button-active" id="oriBtn">初始地图</button>
+            <button type="button" class="task-button" id="flowBtn">交通流量分析</button>
+            <button type="button" class="task-button" id="tripBtn">出行驻留分析</button>
+            <button type="button" class="task-button" id="modeBtn">出行方式分析</button>
         </div>
         <div class="map-frame" id="map"></div>
         <div class="info-frame"></div>
@@ -59,39 +38,17 @@
             <div class="time-slider"></div>
             <div class="time-value"></div>
             <div class="time-clock">
-                <div class="speed-cut-btn">
-                    <div class="speed-cut">
-                        <div class="line line_1"></div>
-                        <div class="line line_2"></div>
-                        <div class="line line_3"></div>
-                        <div class="line line_4"></div>
-                    </div>
-                </div>
-                <div class="clock-btn">
-                    <div class="pause">
-                        <div class="line line_1"></div>
-                        <div class="line line_2"></div>
-                    </div>
-                    <div class="play active">
-                        <div class="line line_1"></div>
-                        <div class="line line_2"></div>
-                        <div class="line line_3"></div>
-                    </div>
-                </div>
-                <div class="speed-up-btn">
-                    <div class="speed-up">
-                        <div class="line line_1"></div>
-                        <div class="line line_2"></div>
-                        <div class="line line_3"></div>
-                        <div class="line line_4"></div>
-                    </div>
-                </div>
+                <span class="time-clock fa iconfont icon-speedcut"></span>
+                <span class="clock-btn fa iconfont icon-play"></span>
+                <span class="speed-up-btn fa iconfont icon-speedup"></span>
             </div>
         </div>
     </div>
 
 </body>
+<script src="js/getData.js"></script>
 <script src="js/map.js"></script>
-<script src="js/user.js"></script>
+<script src="js/task.js"></script>
 <script src="js/time.js"></script>
+
 </html>
