@@ -141,6 +141,29 @@ var speedUpBtn = d3.select(".speed-up-btn")
         }
     });
 
+//绘制用户轨迹
+function changeUserLine() {
+    let personTrackNowData = personTrackData[curUser].features;
+
+    d3.selectAll(".time-user-line").remove();
+
+    personTrackNowData.forEach(d => {
+        svgTime.append("line")
+            .attr("class", "time-user-line")
+            .attr("x1", xScale(d.properties.startTime))
+            .attr("y1", yScale.range()[1] + 2)
+            .attr("x2", xScale(d.properties.endTime))
+            .attr("y2", yScale.range()[1] + 2)
+            .style("opacity", "0.5")
+            .attr("stroke", colType(d.properties.type))
+            .attr("stroke-width", 2);
+    });
+}
+//清除用户轨迹
+function cleanUserLine() {
+    d3.selectAll(".time-user-line").remove();
+}
+
 //--初始化时间轴参数--
 function initTime() {
     curTime = 0;

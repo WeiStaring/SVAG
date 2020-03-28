@@ -3,13 +3,6 @@
     margin: 10px 0 10px 0;
 }
 
-.main-frame>.task-frame>.bottom-line {
-    border-top: 2px dashed #cccccc;
-    height: 2px;
-    overflow: hidden;
-    margin:0 5px 10px 5px;
-}
-
 .main-frame>.task-frame>.task-button {
     width: 120px;
     height: 40px;

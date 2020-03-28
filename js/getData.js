@@ -46,3 +46,60 @@ for (t in spaceVolumeData) {
         sumFlowData[t].volume += spaceVolumeData[t][plot];
     }
 }
+
+
+//个人轨迹原始数据
+var personTrackOriData = d3.csvParse(getData("data/newTripModeResult.csv"));
+//个人轨迹数据
+var personTrackData = {};
+//用户表
+var userList = new Set();
+//速度范围
+var speedDomain = [Infinity, -1];
+
+for (i in personTrackOriData) {
+    if (i == "columns")
+        continue;
+    let d = personTrackOriData[i];
+
+    //更新用户列表
+    if (!userList.has(d.imsi)) {
+        userList.add(d.imsi);
+        personTrackData[d.imsi] = {
+            "type": "FeatureCollection",
+            "features": []
+        };
+    }
+
+    //更新速度范围
+    speedDomain[0] = Math.min(speedDomain[0], d.real_speed);
+    speedDomain[1] = Math.max(speedDomain[1], d.real_speed);
+
+    //更新用户轨迹
+    let tmpLine = {
+        "type": "Feature",
+        "properties": {
+            "startTime": new Date(parseInt(d.start)),
+            "endTime": new Date(parseInt(d.end)),
+            "startPlot": d.startPlot,
+            "endPlot": d.endPlot,
+            "startPoint": [d.startlatitude, d.startlongitude],
+            "endPoint": [d.endlatitude, d.endlongitude],
+            "type": d.type,
+            "realDistance": L.latLng(d.startlatitude, d.startlongitude)
+                .distanceTo(L.latLng(d.endlatitude, d.endlongitude)),
+            "referenceDistance": d.distance,
+            "realTime": d.myTime,
+            "referenceTime": d.duration,
+            "realSpeed": d.real_speed,
+            "referenceSpeed": d.speed,
+        },
+        "geometry": {
+            "type": "LineString",
+            "coordinates": [[d.startlatitude, d.startlongitude],
+            [d.endlatitude, d.endlongitude]]
+        }
+    };
+    personTrackData[d.imsi]["features"].push(tmpLine);
+};
+

@@ -1,5 +1,4 @@
-html,
-body {
+html, body {
     height: 100%;
     width: 100%;
     margin: 0%;
@@ -20,7 +19,7 @@ body {
     margin-right: 0.5%;
     box-sizing: border-box;
     border: 1px solid grey;
-    float:left;
+    float: left;
     text-align: center;
 }
 
@@ -30,7 +29,7 @@ body {
     margin-right: 0.5%;
     box-sizing: border-box;
     border: 1px solid grey;
-    float:left;
+    float: left;
 }
 
 .main-frame>.info-frame {
@@ -39,7 +38,7 @@ body {
     margin: 0%;
     box-sizing: border-box;
     border: 1px solid grey;
-    float:left;
+    float: left;
 }
 
 .main-frame>.time-frame {
@@ -49,5 +48,49 @@ body {
     padding: 1% 0% 1% 0%;
     box-sizing: border-box;
     border: 1px solid grey;
-    float:left;
+    float: left;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #c6c6c6 !important;
+    margin-bottom: 20px;
+}
+
+table th {
+    border-collapse: collapse;
+    border-right: 1px solid #c6c6c6 !important;
+    border-bottom: 1px solid #c6c6c6 !important;
+    background-color: #f0f0f0;
+    padding: 5px 9px;
+    font-size: 14px;
+    font-weight: normal;
+    text-align: center;
+}
+
+table td {
+    border-collapse: collapse;
+    border-right: 1px solid #c6c6c6 !important;
+    border-bottom: 1px solid #c6c6c6 !important;
+    padding: 5px 9px;
+    font-size: 12px;
+    font-weight: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+table tr:nth-child(odd) {
+    background-color: white;
+}
+
+table tr:nth-child(even) {
+    background-color: white;
+}
+
+.bottom-line {
+    border-top: 2px dashed #cccccc;
+    height: 2px;
+    overflow: hidden;
+    margin: 5px 5px 5px 5px;
 }
