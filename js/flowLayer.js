@@ -1,6 +1,5 @@
 //交通流量图层总集合
 var flowLayerGroup = L.layerGroup();
-
 //方格标签图层
 var boxMarkerLayer = L.layerGroup();
 //热力图层
@@ -9,6 +8,8 @@ var heatmapLayer = L.layerGroup();
 var temporalFlowLayer = L.layerGroup();
 //饼图图层集合
 var pieLayer = L.layerGroup();
+//出行驻留图层集合
+var tripStayLayer = L.layerGroup();
 
 //--更新图层数据--
 
@@ -21,7 +22,7 @@ function initPieLayer() {
 
         //pie
         let outerHeightRange = [90, 110];
-        let innerHeightRange = [70, 76]
+        let innerHeightRange = [70, 76];
         let pieOuterRadius = d3.scaleLinear()
             .domain([d3.min(temporalFlowNowData), d3.max(temporalFlowNowData)])
             .range(outerHeightRange);

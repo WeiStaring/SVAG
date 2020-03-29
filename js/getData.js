@@ -12,7 +12,7 @@ function getData(url) {
         success: function (data) {
             result = data;
         }
-    })
+    });
     return result;
 }
 
@@ -46,7 +46,9 @@ for (t in spaceVolumeData) {
         sumFlowData[t].volume += spaceVolumeData[t][plot];
     }
 }
+var stayData = getData("data/spaceStayDataset.json");
 
+var tripData = getData("data/spaceTripDataset.json");
 
 //个人轨迹原始数据
 var personTrackOriData = d3.csvParse(getData("data/newTripModeResult.csv"));
@@ -101,5 +103,6 @@ for (i in personTrackOriData) {
         }
     };
     personTrackData[d.imsi]["features"].push(tmpLine);
+
 };
 

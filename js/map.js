@@ -23,6 +23,7 @@ function changeMapData() {
     changeHeatmapData();
     changeTemporalFlowData();
     changePersonTrackData();
+    changeTripStayData();
 }
 
 //删除所有图层
@@ -39,25 +40,24 @@ function delAllLayer() {
 //添加流量图层
 function addFlowLayer() {
     delAllLayer();
-
     drawFlowLayer();
     map.addLayer(flowLayerGroup);
-
     changeMapData();
 }
 
 //增加出行驻留图层
 function addTripLayer() {
     delAllLayer();
+    drawTripStayLayer();
+    map.addLayer(tripStayLayer);
+    changeMapData();
 }
 
 //增加出行方式图层
 function addModeLayer() {
     delAllLayer();
-
     drawModeLayer();
     map.addLayer(modeLayerGroup);
-
     changeMapData();
 }
 
