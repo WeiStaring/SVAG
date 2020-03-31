@@ -34,6 +34,9 @@ function delAllLayer() {
     cleanModeLayer();
     map.removeLayer(modeLayerGroup);
 
+    cleanTripLayer();
+    map.removeLayer(tripStayLayer);
+
     d3.select(".info-frame").html("");
 }
 

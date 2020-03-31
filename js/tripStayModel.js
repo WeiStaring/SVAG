@@ -1,13 +1,13 @@
 var tripLayer = L.layerGroup();
 function drawTripStayLayer() {
-    tripStayLayer.addLayer(boxMarkerLayer);
+    tripStayLayer.addLayer(boxLayer);
     tripStayLayer.addLayer(tripLayer);
 }
 function changeTripStayData() {
     // console.log(stayData,tripData);
     let tripLineList=[];
     tripLayer.clearLayers();
-    boxMarkerLayer.clearLayers();
+    boxLayer.clearLayers();
     stationBoxesMap.forEach((plott, i) => {
         let stay = stayData[curTime];
         let r = 1;
@@ -26,7 +26,7 @@ function changeTripStayData() {
                 isClick: false,
             });
 
-        boxMarkerLayer.addLayer(circleMarker);
+        boxLayer.addLayer(circleMarker);
     });
 
     let trips = tripData[curTime];
@@ -46,8 +46,6 @@ function changeTripStayData() {
         };
         tripLineList.push(tripLine);
     }
-    console.log(curTime,tripLineList);
-
     let tripSvgLayer = L.d3SvgOverlay(function (selection, projection) {
         selection.selectAll('path')
             .data(tripLineList)
@@ -67,4 +65,7 @@ function changeTripStayData() {
     tripLayer.addLayer(tripSvgLayer);
 }
 
-
+function cleanTripLayer() {
+    tripStayLayer.removeLayer(boxLayer);
+    tripStayLayer.removeLayer(tripLayer);
+}

@@ -24,9 +24,12 @@ var curUser;
 //格子数据
 var stationBoxesMap = getData("data/stationBoxesMap.json");
 
+var stayData = getData("data/spaceStayDataset.json");
+
+var tripData = getData("data/spaceTripDataset.json");
 //空间流量分布数据
 var spaceVolumeData = getData("data/spaceVolumeDataset.json");
-
+// var spaceVolumeData = stayData;
 //基站-时间流量分布数据
 var temporalFlowData = {};
 //总-时间流量数据
@@ -45,10 +48,9 @@ for (t in spaceVolumeData) {
         temporalFlowData[plot][hour] += spaceVolumeData[t][plot];
         sumFlowData[t].volume += spaceVolumeData[t][plot];
     }
+    // sumFlowData[t].volume = ~~(sumFlowData[t].volume/12);
 }
-var stayData = getData("data/spaceStayDataset.json");
 
-var tripData = getData("data/spaceTripDataset.json");
 
 //个人轨迹原始数据
 var personTrackOriData = d3.csvParse(getData("data/newTripModeResult.csv"));

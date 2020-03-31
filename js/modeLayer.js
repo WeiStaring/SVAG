@@ -101,7 +101,6 @@ function initTrackLayer() {
                 .on("click", function (d) {
                     drawInfoList(d.properties);
                 });
-
         }, {
             "zoomDraw": false,
             "zoomAble": true,
@@ -111,7 +110,7 @@ function initTrackLayer() {
         personTrackLayer.addLayer(trackSvgLayer);
         userLayerMap[user] = i;
         i++;
-    };
+    }
 }
 
 

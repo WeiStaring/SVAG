@@ -2,6 +2,8 @@
 var flowLayerGroup = L.layerGroup();
 //方格标签图层
 var boxMarkerLayer = L.layerGroup();
+//方格标签图层(大小)
+var boxLayer = L.layerGroup();
 //热力图层
 var heatmapLayer = L.layerGroup();
 //特定地点时序流量图层
@@ -104,7 +106,7 @@ function initPieLayer() {
                 .call(text => text.append("tspan")
                     .attr("y", "0.2em")
                     .attr("fill-opacity", 1)
-                    .text((d, i) => d.flow));
+                    .text((d, i) => ~~(d.flow/12)));
 
             //绘制内层环形
             selection.selectAll(".inner-path")
@@ -125,10 +127,11 @@ function initPieLayer() {
                     return "translate(" + ac[0] + "," + ac[1] + ") ";
                 })
                 .attr("font-family", "sans-serif")
-                .attr("font-size", 5)
+                .attr("font-size", 6)
                 .attr("text-anchor", "middle")
                 .call(text => text.append("tspan")
-                    .attr("y", "0.15em")
+                    .attr("y", "0.2em")
+                    .attr("fill","white")
                     .attr("fill-opacity", 1)
                     .text((d, i) => i));
         }, {
@@ -153,19 +156,28 @@ function changeHeatmapData() {
 
     //获取t时刻的数据
     let spaceVolumeNowData = [];
-    for (j in spaceVolumeData[t]) {
-        spaceVolumeNowData.push([stationBoxesMap[j].latitude, stationBoxesMap[j].longitude, spaceVolumeData[t][j]]);
+    for (let j in spaceVolumeData[t]) {
+        spaceVolumeNowData.push({'lat':stationBoxesMap[j].latitude, 'lon':stationBoxesMap[j].longitude, 'value':spaceVolumeData[t][j]});
     }
 
     //添加热力图层
     let heatmap = L.heatLayer(spaceVolumeNowData, {
         minOpacity: 0.5,
-        maxZoom: 18,
-        max: 1.0,
-        radius: 8,
-        blur: 5,
-        gradient: null
+        maxZoom: 15,
+        // max: 1.0,
+        radius: 12,
+        blur: 10,
+        scaleRadius:true,
+        useLocalExtrema:true,
+        latField: 'lat',
+        // which field name in your data represents the longitude - default "lng"
+        lngField: 'lng',
+        // which field name in your data represents the data value - default "value"
+        valueField: 'value'
     });
+    // map.on("zoomend", function(){
+    //     heatmap.setOptions({radius: map.getZoom()});
+    // });
     heatmapLayer.addLayer(heatmap);
 }
 
@@ -205,7 +217,7 @@ function changeTemporalFlowData() {
             `<p>volume:${(plott.id in spaceVolumeData[t]) ? spaceVolumeData[t][plott.id] : 0}</p>` +
             `</div>`;
         let circleMarker = L.circleMarker([plott.latitude, plott.longitude], {
-            radius: 3,
+            radius: 2,
             fillColor: "white",
             color: "grey",
             weight: 1,

@@ -32,7 +32,8 @@ function drawArea() {
 
     svgTime.append("g")
         .selectAll('path')
-        .data([sumFlowData.slice(0, curTime)])
+        // .data([sumFlowData.slice(0, curTime)])
+        .data([sumFlowData])
         .join('path')
         .attr("class", "time-area")
         .attr('d', line)
