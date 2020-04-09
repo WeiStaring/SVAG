@@ -4,12 +4,16 @@ var svgTime = d3.select(".time-slider")
     .attr("width", "100%")
     .style("display", "block");
 
+const width = svgTime.node().parentNode.clientWidth;
+const height = svgTime.node().parentNode.clientHeight;
+let margin = {top: 10, right: 35, bottom: 30, left: 35};
 var xScale = d3.scaleTime()
     .domain([new Date(2018, 9, 3, 0, 0, 0), new Date(2018, 9, 3, 24, 0, 0)])//d3.extent(sumFlowData, d => d.time)
-    .range([25, 1120]);
+    .range([margin.left, width-margin.right]);
 var yScale = d3.scaleLinear()
     .domain([0, d3.max(sumFlowData, d => d.volume)])
-    .range([110, 0]);
+    .range([height-margin.bottom, margin.top]);
+
 var xAxis = d3.axisBottom(xScale).ticks(d3.timeHour.every(1)).tickFormat(d3.timeFormat("%H:%M"));
 var yAxis = d3.axisLeft(yScale).ticks(5).tickSizeOuter(0).tickSize(2);
 
@@ -22,9 +26,9 @@ var line = d3.line()
     .y(function (d) { return yScale(d.volume); });
 
 svgTime.append("g")
-    .attr("transform", "translate(0," + yScale.range()[0] + ")")
+    .attr("transform", "translate(0," + (yScale.range()[0]+10) + ")")
     .call(xAxis);
-svgTime.append("g").attr("transform", "translate(" + xScale.range()[0] + ",0)")
+svgTime.append("g").attr("transform", "translate(" + xScale.range()[0] + ",10)")
     .call(yAxis);
 
 function drawArea() {
@@ -39,6 +43,8 @@ function drawArea() {
         .attr('d', line)
         .style("opacity", "0.8")
         .attr("fill", "none")
+        .attr("transform", "translate(0,10)")
+
         .attr("stroke", "#40a9ff")
         .attr("stroke-width", 1.5)
         .attr("stroke-linejoin", "round")
@@ -48,6 +54,7 @@ function drawArea() {
         .data([sumFlowData.slice(0, curTime)])
         .join('path')
         .attr("class", "time-area")
+        .attr("transform", "translate(0,10)")
         .attr('d', area)
         .style("opacity", "0.2")
         .attr("fill", "#40a9ff");
@@ -61,6 +68,7 @@ function drawArea() {
         .attr('cx', d => xScale(d.time))
         .attr('cy', d => yScale(d.volume))
         .attr('r', 2)
+        .attr("transform", "translate(0,10)")
         .style("opacity", "1")
         .attr("fill", "#ff4d4f");
 }
@@ -74,8 +82,9 @@ svgTime.append("line")
     .attr("x2", xScale.range()[0])
     .attr("y2", yScale.range()[1])//yScale(sumFlowData[curTime].volume)
     .style("opacity", "1")
-    .attr("stroke", "#40a9ff")
-    .attr("stroke-width", lineWidth * 1.5)
+    .attr("stroke", "#ff3b3b")
+    .attr("transform", "translate(0,10)")
+    .attr("stroke-width", lineWidth * 1)
     .call(d3.drag()
         .on("drag", dragged));
 

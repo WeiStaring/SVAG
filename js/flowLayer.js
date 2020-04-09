@@ -251,7 +251,7 @@ function changeTemporalFlowData() {
     });
 
     let divTab = d3.select(".info-frame");
-
+    divTab.html("");
     divTab.style('text-align', 'center')
         .append('text')
         .attr("id", "info-title")
@@ -285,7 +285,9 @@ function changeTemporalFlowData() {
         .join('tr')
         .attr("id", "liRank")
         .html((d, i) => {
-            return `<td>No.${i}</td> <td>${d}</td> <td>${(d in spaceVolumeData[t] ? spaceVolumeData[t][d] : 0)}</td>`;
+            let temp =d in spaceVolumeData[t] ? spaceVolumeData[t][d] : 0;
+            if(temp!=0)
+                return `<td>No.${i+1}</td> <td>${d}</td> <td>${(d in spaceVolumeData[t] ? spaceVolumeData[t][d] : 0)}</td>`;
         })
         .on("click", function (d) {
             d3.selectAll("#liRank").style('background', "white");

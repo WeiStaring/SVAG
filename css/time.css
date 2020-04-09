@@ -1,5 +1,5 @@
 .main-frame>.time-frame>.time-slider {
-    width: 91%;
+    width: 90%;
     height: 100%;
     box-sizing: border-box;
     /* border: 1px solid grey; */
@@ -10,7 +10,7 @@
 }
 
 .main-frame>.time-frame>.time-value {
-    width: 8%;
+    width: 10%;
     height: 40%;
     box-sizing: border-box;
     /* border: 1px solid grey; */
@@ -21,7 +21,7 @@
 }
 
 .main-frame>.time-frame>.time-clock {
-    width: 8%;
+    width: 10%;
     height: 60%;
     box-sizing: border-box;
     /* border: 1px solid grey; */

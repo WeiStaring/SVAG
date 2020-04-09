@@ -159,7 +159,7 @@ function drawInfoTab() {
         .style('padding-left', '5px')
         .style('vertical-align', 'top')
         .style('font-size', '12px')
-        .text(d => d)
+        .text(d => d.substr(10,8))
         .style("background", "white")
         .on("click", function (d) {
             d3.selectAll("#liName").style('background', "white");
