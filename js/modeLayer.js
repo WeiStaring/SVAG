@@ -177,11 +177,11 @@ function drawInfoTab() {
         });
     let xScaleTemp = d3.scaleTime()
         .domain([new Date(2018, 9, 3, 0, 0, 0), new Date(2018, 9, 3, 24, 0, 0)])//d3.extent(sumFlowData, d => d.time)
-        .range([10, 180]);
+        .range([10, 170]);
 
     table
         .append('svg')
-        .attr('width',180)
+        .attr('width',170)
         .attr('height',20)
         .append('g')
         .selectAll('line')
