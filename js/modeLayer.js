@@ -120,7 +120,7 @@ function drawInfoTab() {
     let divUser = divTab.append("div")
         .attr("id", "info-user")
         .style('width', "100%")
-        .style('height', "64%")
+        .style('height', "95%")
         .style("margin", "0 0 5px 0");
 
     divUser.style('text-align', 'center')
@@ -135,7 +135,7 @@ function drawInfoTab() {
         .attr("id", "info-user-list")
         .style('text-align', 'left')
         .style('width', "95%")
-        .style('height', "90%")
+        .style('height', "100%")
         .style("overflow", "auto")
         .style('margin', "2%")
         .style('padding', "2%")
@@ -143,15 +143,21 @@ function drawInfoTab() {
         .style('list-style-type', 'none')
         .style("border", `1px solid rgb(232, 226, 217)`)
         .style("border-radius", "2px");
-
-    d3.select("#info-user-list")
+    let dataTemp=[];
+    for(let key in personTrackData){
+        dataTemp.push(personTrackData[key])
+    }
+    let table = d3.select("#info-user-list")
         .selectAll('div')
         .style('text-align', 'center')
-        .data(Array.from(userList))
+        .data(dataTemp)
         .join('li')
         .style('vertical-align', 'middle')
         .style('line-height', '1em')
-        .style('padding-bottom', '0.3em')
+        .style('padding-bottom', '0.3em');
+    console.log(dataTemp);
+
+    table
         .append('text')
         .attr("id", "liName")
         .style('display', 'inline-block')
@@ -159,86 +165,45 @@ function drawInfoTab() {
         .style('padding-left', '5px')
         .style('vertical-align', 'top')
         .style('font-size', '12px')
-        .text(d => d.substr(10,8))
+        .text(d => d.id.substr(10,8))
         .style("background", "white")
         .on("click", function (d) {
             d3.selectAll("#liName").style('background', "white");
             d3.select(this).style('background', "rgb(215, 228, 233)").attr("isClick", "true");
-            curUser = d;
+            curUser = d.id;
             modeLayerGroup.clearLayers();
             modeLayerGroup.addLayer(personTrackLayer.getLayers()[userLayerMap[curUser]]);
             changeUserLine();
         });
+    let xScaleTemp = d3.scaleTime()
+        .domain([new Date(2018, 9, 3, 0, 0, 0), new Date(2018, 9, 3, 24, 0, 0)])//d3.extent(sumFlowData, d => d.time)
+        .range([10, 180]);
 
-    divTab.append("div")
-        .attr("class", "bottom-line");
+    table
+        .append('svg')
+        .attr('width',180)
+        .attr('height',20)
+        .append('g')
+        .selectAll('line')
+        .data(function (d){
+            return d.features;
+        })
+        .enter()
+        .append('line')
+        .attr("class", "time-user-line")
+        .attr("x1", d => xScaleTemp(d.properties.startTime))
+        .attr("y1", 2)
+        .attr("x2", d => xScaleTemp(d.properties.endTime))
+        .attr("y2", 2)
+        .attr("transform", "translate(0,10)")
+        .style("opacity", "0.5")
+        .attr("stroke", d => colType(d.properties.type))
+        .attr("stroke-width", 20);
 
-    let divAnalyze = divTab.append("div")
-        .attr("id", "info-analyze")
-        .style('width', "100%")
-        .style('height', "35%")
-        .style("margin", "0 0 5px 0");
-
-    divAnalyze.style('text-align', 'center')
-        .append('text')
-        .attr("id", "info-analyze-title")
-        .style('display', 'inline-block')
-        .style('font-size', 'small')
-        .style('font-weight', 700)
-        .text("分析过程");
-
-    divAnalyze.append("div")
-        .attr("id", "info-analyze-div")
-        .style('text-align', 'center')
-        .style('width', "95%")
-        .style('height', "90%")
-        .style("overflow", "auto")
-        .style('margin', "2%")
-        .style('box-sizing', 'border-box')
-        .style('list-style-type', 'none');
-
-    d3.select("#info-analyze-div")
-        .append("table")
-        .attr("id", "info-analyze-table");
-
-    d3.select("#info-analyze-table").html(
-        `<tr>` +
-        `<th>直线距离：</th>` +
-        `<td></td>` +
-        `</tr>` +
-        `<tr>` +
-        `<th>规划距离：</th>` +
-        `<td></td>` +
-        `</tr>` +
-        `<tr>` +
-        `<th>直线速度：</th>` +
-        `<td></td>` +
-        `</tr>` +
-        `<tr>` +
-        `<th>规划速度：</th>` +
-        `<td></td>` +
-        `</tr>`);
 }
 
 function drawInfoList(d) {
-    d3.select("#info-analyze-table")
-        .html(
-            `<tr>` +
-            `<th>直线距离：</th>` +
-            `<td>${Math.floor(d.realDistance * 100) / 100}</td>` +
-            `</tr>` +
-            `<tr>` +
-            `<th>规划距离：</th>` +
-            `<td>${Math.floor(d.referenceDistance * 100) / 100}</td>` +
-            `</tr>` +
-            `<tr>` +
-            `<th>直线速度：</th>` +
-            `<td>${Math.floor(d.realSpeed * 100) / 100}</td>` +
-            `</tr>` +
-            `<tr>` +
-            `<th>规划速度：</th>` +
-            `<td>${Math.floor(d.referenceSpeed * 100) / 100}</td>` +
-            `</tr>`);
+
 }
 
 //高亮此时的轨迹
@@ -259,6 +224,37 @@ function changePersonTrackData() {
         });
 }
 
+function drawTimeLineTrip() {
+    d3.selectAll(".time-area").remove();
+    svgTime.selectAll('g').remove();
+    let personTrackNowData = personTrackData[curUser].features;
+    console.log(personTrackNowData);
+    let yScaleTemp = d3.scaleLinear()
+        .domain([0, d3.max(personTrackNowData, d => d.properties.realSpeed)+2])
+        .range([height-margin.bottom, margin.top]);
+    let yAxisTemp = d3.axisLeft(yScaleTemp).ticks(5).tickSizeOuter(0).tickSize(2);
+    svgTime.append("g")
+        .attr("transform", "translate(0," + (yScale.range()[0]+10) + ")")
+        .call(xAxis);
+    svgTime.append("g").attr("transform", "translate(" + xScale.range()[0] + ",10)")
+        .call(yAxisTemp);
+
+    svgTime.selectAll(".time-user-line").remove();
+
+    personTrackNowData.forEach(d => {
+        svgTime.append("line")
+            .attr("class", "time-user-line")
+            .attr("x1", xScale(d.properties.startTime))
+            .attr("y1", yScale(d.properties.realSpeed))
+            .attr("x2", xScale(d.properties.endTime))
+            .attr("y2", yScale(d.properties.realSpeed))
+            .attr("transform", "translate(0,10)")
+            .style("opacity", "0.5")
+            .attr("stroke", colType(d.properties.type))
+            .attr("stroke-width", 5);
+    });
+
+}
 //初始化出行方式图层
 function initModeLayer() {
     initTrackLayer();

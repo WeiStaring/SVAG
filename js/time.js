@@ -32,8 +32,8 @@ svgTime.append("g").attr("transform", "translate(" + xScale.range()[0] + ",10)")
     .call(yAxis);
 
 function drawArea() {
+    console.log(sumFlowData);
     d3.selectAll(".time-area").remove();
-
     svgTime.append("g")
         .selectAll('path')
         // .data([sumFlowData.slice(0, curTime)])
@@ -44,14 +44,13 @@ function drawArea() {
         .style("opacity", "0.8")
         .attr("fill", "none")
         .attr("transform", "translate(0,10)")
-
         .attr("stroke", "#40a9ff")
         .attr("stroke-width", 1.5)
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round");
     svgTime.append("g")
         .selectAll('path')
-        .data([sumFlowData.slice(0, curTime)])
+        .data([sumFlowData])
         .join('path')
         .attr("class", "time-area")
         .attr("transform", "translate(0,10)")
@@ -59,7 +58,7 @@ function drawArea() {
         .style("opacity", "0.2")
         .attr("fill", "#40a9ff");
     svgTime.selectAll('circle')
-        .data(sumFlowData.slice(0, curTime))
+        .data(sumFlowData)
         .join('circle')
         .filter(d => {
             return d.time.getMinutes() == 0;
@@ -105,7 +104,7 @@ function changeClock() {
         .attr("x1", xScale(tt))
         .attr("x2", xScale(tt));
     d3.select(".time-value").text(d3.timeFormat("%H:%M:%S")(tt));
-    drawArea();
+    // drawArea();
     changeMapData();
 }
 
@@ -153,21 +152,7 @@ var speedUpBtn = d3.select(".speed-up-btn")
 
 //绘制用户轨迹
 function changeUserLine() {
-    let personTrackNowData = personTrackData[curUser].features;
-
-    d3.selectAll(".time-user-line").remove();
-
-    personTrackNowData.forEach(d => {
-        svgTime.append("line")
-            .attr("class", "time-user-line")
-            .attr("x1", xScale(d.properties.startTime))
-            .attr("y1", yScale.range()[1] + 2)
-            .attr("x2", xScale(d.properties.endTime))
-            .attr("y2", yScale.range()[1] + 2)
-            .style("opacity", "0.5")
-            .attr("stroke", colType(d.properties.type))
-            .attr("stroke-width", 2);
-    });
+    drawTimeLineTrip();
 }
 //清除用户轨迹
 function cleanUserLine() {

@@ -19,7 +19,7 @@ function getData(url) {
 //当前时刻
 var curTime = 100;
 //当前用户
-var curUser;
+var curUser="460000095005571676";
 
 //格子数据
 var stationBoxesMap = getData("data/stationBoxesMap.json");
@@ -70,6 +70,7 @@ for (i in personTrackOriData) {
     if (!userList.has(d.imsi)) {
         userList.add(d.imsi);
         personTrackData[d.imsi] = {
+            "id": d.imsi,
             "type": "FeatureCollection",
             "features": []
         };

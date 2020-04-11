@@ -5,7 +5,6 @@ function drawTripStayLayer() {
     tripStayinfo();
 }
 function changeTripStayData() {
-    // console.log(stayData,tripData);
     let tripLineList=[];
     tripLayer.clearLayers();
     boxLayer.clearLayers();
@@ -64,7 +63,6 @@ function changeTripStayData() {
             "interactive": true,
         });
     tripLayer.addLayer(tripSvgLayer);
-
 }
 
 function tripStayinfo() {
