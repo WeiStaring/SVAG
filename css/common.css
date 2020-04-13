@@ -16,17 +16,17 @@ html, body {
 
 .main-frame>.right-frame{
     width:30%;
-    height:70%;
+    height:100%;
     float:right;
     margin-top:1%;
 }
 
 .main-frame>.right-frame>.task-frame {
     width: 90%;
-    height: 6%;
-    margin: 1.5%;
+    height: 4%;
+    margin: 1%;
     box-sizing: border-box;
-    border: 0px solid #3FBCA5;
+    border: 0 solid #3FBCA5;
 /*     float: right; */
     text-align: center;
     border-radius: 10px;
@@ -36,12 +36,11 @@ html, body {
 
 .main-frame .right-frame .title {
     box-sizing: border-box;
-    margin-bottom:20px;
+    margin-bottom:5px;
     margin-top:-25px;
     margin-right:5%;
     height: 15%;
     /* border: 0px solid #3FBCA5; */
-    float: center;
     text-align: center;
     border-radius: 10px;
     /*    background-color: #3FBCA5;*/
@@ -75,7 +74,7 @@ html, body {
 
 .main-frame>.right-frame>.info-frame {
     width: 90%;
-    height: 83%;
+    height: 48%;
     margin: 2%;
     box-sizing: border-box;
     border: 0px solid #3FBCA5;
@@ -85,7 +84,7 @@ html, body {
 }
 
 .main-frame>.time-frame {
-    width: 97%;
+    width: 67%;
     height: 20%;
     margin-left: 1.5%;
     margin-right: 1.5%;

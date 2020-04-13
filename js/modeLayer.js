@@ -99,7 +99,7 @@ function initTrackLayer() {
                     return 2 / projection.scale;
                 })
                 .on("click", function (d) {
-                    drawInfoList(d.properties);
+                    // drawInfoList(d.properties);
                 });
         }, {
             "zoomDraw": false,
@@ -135,7 +135,7 @@ function drawInfoTab() {
         .attr("id", "info-user-list")
         .style('text-align', 'left')
         .style('width', "95%")
-        .style('height', "100%")
+        .style('height', "90%")
         .style("overflow", "auto")
         .style('margin', "2%")
         .style('padding', "2%")
@@ -199,10 +199,77 @@ function drawInfoTab() {
         .style("opacity", "0.5")
         .attr("stroke", d => colType(d.properties.type))
         .attr("stroke-width", 20);
-
+    drawParaAxis(dataTemp);
 }
 
-function drawInfoList(d) {
+function drawParaAxis(data) {
+    let svg = d3.select('#para_axis');
+    const width = svg.node().parentNode.clientWidth;
+    const height = svg.node().parentNode.clientHeight;
+    svg.attr("width", width).attr("height", height);
+    var margin = {top:25,bottom:25,left:15,right:15};
+
+    let dataTemp=[];
+    for(let i in data){
+        for(let j in data[i].features){
+            dataTemp.push({
+                'realDistance':data[i].features[j].properties['realDistance'],
+                'realSpeed':parseFloat(data[i].features[j].properties['realSpeed']),
+                'referenceTime':parseFloat(data[i].features[j].properties['referenceTime']),
+                'startPlot':parseInt(data[i].features[j].properties['startPlot']),
+                'endPlot':parseInt(data[i].features[j].properties['endPlot']),
+                'type':parseInt(data[i].features[j].properties['type'])
+            })
+        }
+    }
+    let keys=['realDistance','realSpeed','referenceTime','startPlot','endPlot','type'];
+    let x = new Map(
+        Array.from(
+            keys,
+            key => [key, d3.scaleLinear(d3.extent(data, d => d[key]), [margin.left, width - margin.right])]
+        )
+    );
+    let y = d3.scalePoint(keys, [margin.top, height - margin.bottom]);
+
+
+    svg.append("g")
+        .selectAll("g")
+        .data(keys)
+        .join("g")
+        .attr("transform", d => `translate(0,${y(d)})`)
+        .each(function(d) { d3.select(this).call(d3.axisBottom(x.get(d))); })
+        .call(g => g.append("text")
+            .attr("x", margin.left)
+            .attr("y", -6)
+            .attr("text-anchor", "start")
+            .attr("fill", "currentColor")
+            .text(d => d))
+        .call(g => g.selectAll("text")
+            .clone(true).lower()
+            .attr("fill", "none")
+            .attr("stroke-width", 5)
+            .attr("stroke-linejoin", "round")
+            .attr("stroke", "white"));
+
+    let keyz = keys[0];
+    let z = d3.scaleSequential(x.get(keyz).domain().reverse(), d3.interpolateBrBG);
+
+    svg.append("g")
+        .attr("fill", "none")
+        .attr("stroke-width", 1.5)
+        .selectAll("path")
+        .data(dataTemp.slice().sort((a, b) => d3.ascending(a[keyz], b[keyz])))
+        .join("path")
+        .attr("stroke", d => z(d[keyz]))
+        .attr("stroke-opacity", 0.4)
+        .attr("d", d => d3.line()
+            .defined(([, value]) => value != null)
+            .x(([key, value]) => x.get(key)(value))
+            .y(([key]) => y(key))
+            (d3.cross(keys, [d], (key, d) => [key, d[key]])))
+        .append("title")
+        .text(d => d.name);
+
 
 }
 
@@ -228,7 +295,6 @@ function drawTimeLineTrip() {
     d3.selectAll(".time-area").remove();
     svgTime.selectAll('g').remove();
     let personTrackNowData = personTrackData[curUser].features;
-    console.log(personTrackNowData);
     let yScaleTemp = d3.scaleLinear()
         .domain([0, d3.max(personTrackNowData, d => d.properties.realSpeed)+2])
         .range([height-margin.bottom, margin.top]);
