@@ -129,7 +129,7 @@ function drawInfoTab() {
         .style('display', 'inline-block')
         .style('font-size', 'small')
         .style('font-weight', 700)
-        .text("用户列表");
+        .text("用户轨迹语义轴");
 
     divUser.append("div")
         .attr("id", "info-user-list")
@@ -155,7 +155,6 @@ function drawInfoTab() {
         .style('vertical-align', 'middle')
         .style('line-height', '1em')
         .style('padding-bottom', '0.3em');
-    console.log(dataTemp);
 
     table
         .append('text')
@@ -166,7 +165,6 @@ function drawInfoTab() {
         .style('vertical-align', 'top')
         .style('font-size', '12px')
         .text(d => d.id.substr(10,8))
-        .style("background", "white")
         .on("click", function (d) {
             d3.selectAll("#liName").style('background', "white");
             d3.select(this).style('background', "rgb(215, 228, 233)").attr("isClick", "true");
@@ -177,11 +175,11 @@ function drawInfoTab() {
         });
     let xScaleTemp = d3.scaleTime()
         .domain([new Date(2018, 9, 3, 0, 0, 0), new Date(2018, 9, 3, 24, 0, 0)])//d3.extent(sumFlowData, d => d.time)
-        .range([10, 170]);
+        .range([10, 280]);
 
     table
         .append('svg')
-        .attr('width',170)
+        .attr('width',280)
         .attr('height',20)
         .append('g')
         .selectAll('line')
@@ -199,47 +197,112 @@ function drawInfoTab() {
         .style("opacity", "0.5")
         .attr("stroke", d => colType(d.properties.type))
         .attr("stroke-width", 20);
-    drawParaAxis(dataTemp);
+    return dataTemp;
+}
+
+function drawHelper() {
+    d3.select('#info_frame_down').selectAll('text').remove();
+    d3.select('#info_frame_down')
+        .append('text')
+        .text('轨迹信息总览视图')
+        .style('float','left')
+        .style('padding-left', '1em');
+
 }
 
 function drawParaAxis(data) {
-    let svg = d3.select('#para_axis');
-    const width = svg.node().parentNode.clientWidth;
-    const height = svg.node().parentNode.clientHeight;
-    svg.attr("width", width).attr("height", height);
-    var margin = {top:25,bottom:25,left:15,right:15};
+    drawHelper();
+    //画选择器
+    d3.select('#info_frame_down').selectAll("select").remove();
+    d3.select('#info_frame_down').append("select")
+        .style("float", "right")
+        .style('padding-right', '1em')
+        .on("change",function (d) {
+            let selected = this.value;
+            console.log(selected);
+            switch (selected) {
+                case 'car': {selected=1;break;}
+                case 'walk': {selected=2;break;}
+                case 'bike': {selected=3;break;}
+                case 'bus': {selected=4;break;}
+            }
 
+            svg.selectAll(".para")
+                .attr("stroke", function (k) {
+                    if(selected==k.type)
+                        return 'orange';
+                    else
+                        return "#ccc";
+                })
+        })
+        .selectAll("option").data(['car','walk','bike','bus'])
+        .enter().append("option")
+        .attr("value",function(d){return d;})
+        .property("selected",function(d){ return d === 'car'; })
+        .text(function(d){ return d; });
+    //画svg
+    d3.select('#info_frame_down').selectAll("svg").remove();
+    let svg = d3.select('#info_frame_down').append('svg');
+    svg.selectAll('g').remove();
+    const width = svg.node().parentNode.clientWidth;
+    const height = svg.node().parentNode.clientHeight-50;
+    svg.attr("width", width).attr("height", height);
+    var margin = {top:35,bottom:25,left:15,right:15};
+    //数据
     let dataTemp=[];
     for(let i in data){
         for(let j in data[i].features){
+            if(parseFloat(data[i].features[j].properties['realSpeed'])>100)
+                continue;
             dataTemp.push({
                 'realDistance':data[i].features[j].properties['realDistance'],
                 'realSpeed':parseFloat(data[i].features[j].properties['realSpeed']),
                 'referenceTime':parseFloat(data[i].features[j].properties['referenceTime']),
-                'startPlot':parseInt(data[i].features[j].properties['startPlot']),
-                'endPlot':parseInt(data[i].features[j].properties['endPlot']),
                 'type':parseInt(data[i].features[j].properties['type'])
             })
         }
     }
-    let keys=['realDistance','realSpeed','referenceTime','startPlot','endPlot','type'];
+    //比例尺
+    let keys=['realDistance','realSpeed','referenceTime','type'];
     let x = new Map(
         Array.from(
             keys,
-            key => [key, d3.scaleLinear(d3.extent(data, d => d[key]), [margin.left, width - margin.right])]
+            key => [key, d3.scaleLinear(d3.extent(dataTemp, d => d[key]), [margin.left, width - margin.right])]
         )
     );
+
     let y = d3.scalePoint(keys, [margin.top, height - margin.bottom]);
 
+    let line = d3.line()
+        .defined(([, value]) => value != null)
+        .x(([key, value]) => x.get(key)(value))
+        .y(([key]) => y(key));
 
+
+    //画线
+    let paralines = svg.append("g");
+    paralines.append("g")
+        .attr("fill", "none")
+        .attr("stroke-width", 1.5)
+        .selectAll("path")
+        .data(dataTemp)
+        .join("path")
+        .attr("stroke", '#ccc')
+        .attr('class','para')
+        .attr("stroke-width",0.5)
+        .attr("stroke-opacity", 0.25)
+        .attr("d", function(d){
+            return line(d3.cross(keys, [d], (key, d) => [key, d[key]]))
+        });
+    //画轴
     svg.append("g")
         .selectAll("g")
         .data(keys)
         .join("g")
         .attr("transform", d => `translate(0,${y(d)})`)
-        .each(function(d) { d3.select(this).call(d3.axisBottom(x.get(d))); })
+        .each(function(d) { d3.select(this).call(d3.axisBottom(x.get(d)).ticks(5)); })
         .call(g => g.append("text")
-            .attr("x", margin.left)
+            .attr("x", width-margin.left-60)
             .attr("y", -6)
             .attr("text-anchor", "start")
             .attr("fill", "currentColor")
@@ -250,25 +313,6 @@ function drawParaAxis(data) {
             .attr("stroke-width", 5)
             .attr("stroke-linejoin", "round")
             .attr("stroke", "white"));
-
-    let keyz = keys[0];
-    let z = d3.scaleSequential(x.get(keyz).domain().reverse(), d3.interpolateBrBG);
-
-    svg.append("g")
-        .attr("fill", "none")
-        .attr("stroke-width", 1.5)
-        .selectAll("path")
-        .data(dataTemp.slice().sort((a, b) => d3.ascending(a[keyz], b[keyz])))
-        .join("path")
-        .attr("stroke", d => z(d[keyz]))
-        .attr("stroke-opacity", 0.4)
-        .attr("d", d => d3.line()
-            .defined(([, value]) => value != null)
-            .x(([key, value]) => x.get(key)(value))
-            .y(([key]) => y(key))
-            (d3.cross(keys, [d], (key, d) => [key, d[key]])))
-        .append("title")
-        .text(d => d.name);
 
 
 }
@@ -328,11 +372,14 @@ function initModeLayer() {
 
 //绘制出行方式图层
 function drawModeLayer() {
-    drawInfoTab();
+    let data = drawInfoTab();
+    drawParaAxis(data);
 }
 
 //清除出行方式图层
 function cleanModeLayer() {
     modeLayerGroup.clearLayers();
     cleanUserLine();
+    d3.select('#info_frame_down').selectAll("svg").remove();
+    d3.select('#info_frame_down').selectAll("select").remove();
 }
