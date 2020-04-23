@@ -3,6 +3,7 @@ function drawTripStayLayer() {
     tripStayLayer.addLayer(boxLayer);
     tripStayLayer.addLayer(tripLayer);
     tripStayinfo();
+    drawForceDirectedGraph();
 }
 function changeTripStayData() {
     let tripLineList=[];
@@ -169,4 +170,161 @@ function drawTripStayTimeLines(plot) {
 function cleanTripLayer() {
     tripStayLayer.removeLayer(boxLayer);
     tripStayLayer.removeLayer(tripLayer);
+}
+
+function drawForceDirectedGraph(){
+    var marge = {top:0,right:0,bottom:0,left:0}
+    var svg = d3.select('#info_frame_down').append('svg').attr('width',380).attr('height',345);
+    var width = svg.attr('width');
+    var height = svg.attr('height');
+    var g = svg.append('g').attr('transform','translate('+marge.left+','+marge.top+')');
+    let tripedges = tripData[curTime];
+    let set = new Set();
+    for(let i=0;i<tripedges.length;i++){
+        set.add(Number(tripedges[i].source));
+        set.add(Number(tripedges[i].target));
+    }
+    let nodes=[];
+    for (let item of set) {
+        let nd={
+            "name":String(item)
+        };
+        nodes.push(nd);
+    }
+    console.log(nodes);    
+    let map=new Map();
+    let cnt=0;
+    for(let val of set.values()) {
+        map.set(val,cnt);
+        cnt++;
+    }
+    console.log(map);
+    let edges=[];
+    for(let i=0;i<tripedges.length;i++){
+        let start = Number(tripedges[i].source);
+        let end = Number(tripedges[i].target);
+        let ed={
+            "source":map.get(start),
+            "target":map.get(end),
+            "value":tripedges[i].weight
+        };
+        edges.push(ed);
+    }
+    var colorScale = d3.scaleOrdinal().domain(d3.range(nodes.length)).range(d3.schemeCategory10);
+    // 新建力导向图
+    var forceSimulation = d3.forceSimulation()
+        .force('link',d3.forceLink())
+        .force('charge',d3.forceManyBody())
+        .force('center',d3.forceCenter());
+    // 生成节点
+    forceSimulation.nodes(nodes)
+        .on('tick',render);
+    // 生成边集
+    forceSimulation.force('link')
+        .links(edges)
+        .distance(function(d){
+        return d.value*100;
+        })
+    // 力导向图中心位置
+    forceSimulation.force('center')
+        .x(width/2)
+        .y(height/2);
+    console.log(nodes);
+    console.log(edges);
+    // 边
+    var links = g.append('g')
+        .selectAll('line')
+        .data(edges)
+        .enter()
+        .append('line')
+        .attr('stroke',function(d,i){
+        return colorScale(i);
+        })
+        .attr('stroke-width',1)
+    // 边上的文字
+/*    var linksText = g.append('g')
+        .selectAll('text')
+        .data(edges)
+        .enter()
+        .append('text')
+        .text(function(d,i){
+        return d.relation;
+        })*/
+    //节点
+    var gs = g.selectAll('.node')
+        .data(nodes)
+        .enter()
+        .append('g')
+        .call(
+        d3.drag()
+        .on('start',started)
+        .on('drag',dragged)
+        .on('end',ended)
+        )
+    gs.append('circle')
+        .attr('r',10)
+        .attr('fill',function(d,i){
+        return colorScale(i);
+        })
+    gs.append('text')
+        .text(function(d,i){
+        return d.name;
+        })
+        .attr('width',100)
+        .attr('height',30)
+        .attr('text-anchor','middle')
+        .attr('x',0)
+        .attr('y',-30)
+        .attr('fill',function(d,i){
+        return colorScale(i);
+        })
+    function started(d){
+        if(!d3.event.active){
+        forceSimulation.alphaTarget(0.8).restart();
+        }
+        d.fx = d.x;
+        d.fy = d.y;
+    }
+    function dragged(d){
+        d.fx = d3.event.x;
+        d.fy = d3.event.y;
+    }
+    function ended(d){
+        if(!d3.event.active){
+        forceSimulation.alphaTarget(0);
+        }
+        d.fx = null;
+        d.fy = null;
+    }
+    function render(){
+        // 线的位置
+        links.attr('x1',function(d){
+        return d.source.x;
+        })
+
+        links.attr('y1',function(d){
+        return d.source.y;
+        })
+
+        links.attr('x2',function(d){
+        return d.target.x;
+        })
+
+        links.attr('y2',function(d){
+        return d.target.y;
+        })
+        // 线上的文字的位置
+/*        linksText.attr('x',function(d){
+        return (d.source.x+d.target.x)/2;
+        })
+        linksText.attr('y',function(d){
+        return (d.source.y + d.target.y)/2;
+        })*/
+        //圆点的位置
+        gs.attr('transform',function(d,i){
+        return 'translate('+d.x+','+d.y+')';
+        })
+    }
+    console.log(tripData[curTime]);
+    console.log(edges);
 }
