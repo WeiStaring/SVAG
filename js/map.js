@@ -37,7 +37,7 @@ function delAllLayer() {
     cleanTripLayer();
     map.removeLayer(tripStayLayer);
 
-    d3.select(".info-frame").html("");
+    d3.select("#info_svg_up").selectAll('g').remove();
 }
 
 //添加流量图层

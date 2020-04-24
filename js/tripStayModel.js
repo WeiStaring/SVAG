@@ -3,7 +3,6 @@ function drawTripStayLayer() {
     tripStayLayer.addLayer(boxLayer);
     tripStayLayer.addLayer(tripLayer);
     tripStayinfo();
-
 }
 function changeTripStayData() {
     let tripLineList=[];
@@ -67,77 +66,54 @@ function changeTripStayData() {
     drawForceDirectedGraph();
 }
 
-function tripStayinfo() {
-    d3.select(".info-frame").html("");
-    let divTab = d3.select(".info-frame");
-    divTab.style('text-align', 'center')
-        .append('text')
-        .attr("id", "info-title")
-        .style('display', 'inline-block')
-        .style('font-size', 'small')
-        .style('font-weight', 700)
-        .text("职住地分析");
+function tripStayinfo(plot=0) {
+    let margin={left:25,top:25,right:25,bottom:25};
+    d3.select("#info_svg_up").selectAll('g').remove();
 
-    divTab.append("div")
-        .attr("id", "info-list")
-        .style('text-align', 'left')
-        .style('width', "95%")
-        .style('height', "50%")
-        .style("overflow", "auto")
-        .style('margin', "2%")
-        .style('padding', "2%")
-        .style('box-sizing', 'border-box')
-        .style('list-style-type', 'none')
-        .style("border", `1px solid rgb(232, 226, 217)`)
-        .style("border-radius", "2px");
+    info_svg_up = d3.select("#info_svg_up");
+    const width = info_svg_up.node().parentNode.clientWidth;
+    const height = info_svg_up.node().parentNode.clientHeight;
+    info_svg_up
+        .attr('width',width)
+        .attr('height',height);
 
-    let userTab = d3.select("#info-list")
-        .append("table")
-        .attr("id", "info-stay-table");
-
-    userTab.append("tr")
-        .html(`<th>区块号</th> <th>职住类别</th>`);
-
-    userTab.selectAll("#liRank")
-        .data([{'id':0,'label':'stay'},{'id':1,'label':'work'}])
-        .join('tr')
-        .attr("id", "liRank")
-        .html((d, i) => {
-            return `<td>${d.id}</td> <td>${d.label}</td>`;
-        })
-        .on("click", function (d) {
-            drawTripStayTimeLines(d.id);
-        });
-}
-function drawTripStayTimeLines(plot) {
-    let tempTripData=[],tempStayData=[];
-    for(let i=0;i<24;i++){
-        tempTripData.push(0);
+    let tempTripInData=[],tempTripOutData=[],tempStayData=[];
+    for(let i=0;i<288;i++){
+        tempTripInData.push(0);
+        tempTripOutData.push(0);
         tempStayData.push(0);
     }
     for(let i=0;i<288;i++){
-        let j = Math.floor(i/12);
         if (stayData[i].hasOwnProperty(plot))
-            tempStayData[j]+=stayData[i][plot];
+            tempStayData[i]=stayData[i][plot];
         for(let k=0;k<tripData[i].length;k++){
             if(tripData[i][k].source==plot){
-                // console.log(tripData[i][k].source,plot,tripData[i][k].source==plot,tripData[i][k].weight);
-                tempTripData[j]+=tripData[i][k].weight
+                tempTripOutData[i]+=tripData[i][k].weight
+            }
+            if(tripData[i][k].target==plot){
+                tempTripInData[i]+=tripData[i][k].weight
             }
         }
     }
-    for(let i=0;i<24;i++){
-        tempTripData[i]=Math.ceil(tempTripData[i]/12);
-        tempStayData[i]=Math.ceil(tempStayData[i]/12);
-    }
-    // console.log(tempStayData,tempTripData);
-    let width = 300,height = 200;
+    console.log(stayData);
+    console.log(tempStayData,tempTripInData,tempTripOutData);
+
     var scale_x=d3.scaleLinear()
-        .domain([0,tempTripData.length-1])
-        .range([0,width]);
+        .domain([0,288])
+        .range([margin.left,width-margin.right]);
     var scale_y=d3.scaleLinear()
-        .domain([0,Math.max(d3.max(tempTripData),d3.max(tempStayData))])
-        .range([height,0]);
+        .domain([0,Math.max(d3.max(tempTripInData),d3.max(tempTripOutData),d3.max(tempStayData))])
+        .range([height-margin.bottom,margin.top]);
+// 画轴
+
+    var yAxis = d3.axisLeft(scale_y).ticks(5);
+    var xAxis = d3.axisBottom(scale_x).ticks(5);
+    info_svg_up.append('g')
+        .attr("transform",`translate(0,${height-margin.bottom})`)
+        .call(xAxis);
+    info_svg_up.append('g')
+        .attr("transform",`translate(${margin.left},0)`)
+        .call(yAxis);
 
 //画线函数
     var line_generator= d3.line()
@@ -148,26 +124,29 @@ function drawTripStayTimeLines(plot) {
             return scale_y(d);
         })
         .curve(d3.curveMonotoneX);
-    // .curve(d3.curveMonotoneX) // apply smoothing to the line
-    let margin={left:25,top:25,right:25,bottom:5};
-    d3.select(".info-frame").remove('svg');
-    let g = d3.select(".info-frame").append('svg')
-        .attr("transform","translate("+margin.left+","+margin.top+")");
 
-    g.append('g').append("path")
-        .attr("d",line_generator(tempTripData))
-        .style("stroke-width", 0.5)
+    info_svg_up.append('g').append("path")
+        .attr("d",line_generator(tempTripInData))
+        .style("stroke-width", 1)
         .style("stroke",'red')
         .style("fill", "none")
         .style('stroke-opacity', 1);
 
-    g.append('g').append("path")
+    info_svg_up.append('g').append("path")
+        .attr("d",line_generator(tempTripOutData))
+        .style("stroke-width", 1)
+        .style("stroke",'blue')
+        .style("fill", "none")
+        .style('stroke-opacity', 1);
+
+    info_svg_up.append('g').append("path")
         .attr("d",line_generator(tempStayData))
-        .style("stroke-width", 0.5)
-        .style("stroke",'red')
+        .style("stroke-width", 1)
+        .style("stroke",'green')
         .style("fill", "none")
         .style('stroke-opacity', 1);
 }
+
 function cleanTripLayer() {
     tripStayLayer.removeLayer(boxLayer);
     tripStayLayer.removeLayer(tripLayer);
