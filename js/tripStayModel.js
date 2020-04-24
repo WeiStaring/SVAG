@@ -63,14 +63,14 @@ function changeTripStayData() {
             "interactive": true,
         });
     tripLayer.addLayer(tripSvgLayer);
-    drawForceDirectedGraph();
+    if(tripStayButtonIsClicked==1)
+        drawForceDirectedGraph();
 }
 
 function tripStayinfo(plot=0) {
     let margin={left:25,top:25,right:25,bottom:25};
-    d3.select("#info_svg_up").selectAll('g').remove();
-
-    info_svg_up = d3.select("#info_svg_up");
+    clearInfoUp();
+    let info_svg_up = d3.select("#info_frame_up").append('svg');
     const width = info_svg_up.node().parentNode.clientWidth;
     const height = info_svg_up.node().parentNode.clientHeight;
     info_svg_up
@@ -95,8 +95,6 @@ function tripStayinfo(plot=0) {
             }
         }
     }
-    console.log(stayData);
-    console.log(tempStayData,tempTripInData,tempTripOutData);
 
     var scale_x=d3.scaleLinear()
         .domain([0,288])
@@ -153,15 +151,16 @@ function cleanTripLayer() {
 }
 
 function drawForceDirectedGraph(){
-    var marge = {top:0,right:0,bottom:0,left:0};
-    var width=380;
-    var height=345;
+    var marge = {top:20,right:10,bottom:20,left:10};
+
     d3.select('#info_frame_down').selectAll('svg').remove();
-    console.log(curTime);
-    var svg = d3.select('#info_frame_down').append('svg').attr('width',width).attr('height',height);
-    var width = svg.attr('width');
-    var height = svg.attr('height');
-    var g = svg.append('g').attr('transform','translate('+marge.left+','+marge.top+')');
+    var svg = d3.select('#info_frame_down').append('svg');
+    const width = svg.node().parentNode.clientWidth;
+    const height = svg.node().parentNode.clientHeight;
+    svg.attr('width',width)
+        .attr('height',height);
+
+    var g = svg.append('g').attr('transform','translate(0,0)');
     let tripedges = tripData[curTime];
     let set = new Set();
     for(let i=0;i<tripedges.length;i++){
@@ -224,7 +223,7 @@ function drawForceDirectedGraph(){
         svg.append("marker")
         //.attr("id", function(d) { return d; })
             .attr("id", "resolved")
-            //.attr("markerUnits","strokeWidth")//设置为strokeWidth箭头会随着线的粗细发生变化
+            .attr("markerUnits","strokeWidth")//设置为strokeWidth箭头会随着线的粗细发生变化
             .attr("markerUnits","userSpaceOnUse")
             .attr("viewBox", "0 -5 10 10")//坐标系的区域
             .attr("refX",32)//箭头坐标
@@ -264,7 +263,7 @@ function drawForceDirectedGraph(){
         );
     gs.append('circle')
         .attr('r',function (d,i) {
-            return d.stay;
+            return d.stay*2;
         })
         .attr('fill',function(d,i){
         return '#ccc';

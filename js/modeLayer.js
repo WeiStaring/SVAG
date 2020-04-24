@@ -113,9 +113,10 @@ function initTrackLayer() {
     }
 }
 
+function drawInfoTable() {
+    clearInfoUp();
 
-function drawInfoTab() {
-    let divTab = d3.select(".info-frame");
+    let divTab = d3.select("#info_frame_up");
 
     let divUser = divTab.append("div")
         .attr("id", "info-user")
@@ -156,8 +157,7 @@ function drawInfoTab() {
         .style('line-height', '1em')
         .style('padding-bottom', '0.3em');
 
-    table
-        .append('text')
+    table.append('text')
         .attr("id", "liName")
         .style('display', 'inline-block')
         .style('max-width', '15em')
@@ -200,20 +200,14 @@ function drawInfoTab() {
     return dataTemp;
 }
 
-function drawHelper() {
-    d3.select('#info_frame_down').selectAll('text').remove();
+function drawParaAxis(data) {
+    cleanInfoDown();
     d3.select('#info_frame_down')
         .append('text')
         .text('轨迹信息总览视图')
         .style('float','left')
         .style('padding-left', '1em');
-
-}
-
-function drawParaAxis(data) {
-    drawHelper();
     //画选择器
-    d3.select('#info_frame_down').selectAll("select").remove();
     d3.select('#info_frame_down').append("select")
         .style("float", "right")
         .style('padding-right', '1em')
@@ -241,7 +235,7 @@ function drawParaAxis(data) {
         .property("selected",function(d){ return d === 'car'; })
         .text(function(d){ return d; });
     //画svg
-    d3.select('#info_frame_down').selectAll("svg").remove();
+
     let svg = d3.select('#info_frame_down').append('svg');
     svg.selectAll('g').remove();
     const width = svg.node().parentNode.clientWidth;
@@ -372,7 +366,7 @@ function initModeLayer() {
 
 //绘制出行方式图层
 function drawModeLayer() {
-    let data = drawInfoTab();
+    let data = drawInfoTable();
     drawParaAxis(data);
 }
 
@@ -380,6 +374,5 @@ function drawModeLayer() {
 function cleanModeLayer() {
     modeLayerGroup.clearLayers();
     cleanUserLine();
-    d3.select('#info_frame_down').selectAll("svg").remove();
-    d3.select('#info_frame_down').selectAll("select").remove();
+    cleanInfoDown();
 }

@@ -15,7 +15,9 @@ function getData(url) {
     });
     return result;
 }
-
+var tripStayButtonIsClicked = 0;
+var volumeButtonIsClicked = 0;
+var tripModeButtonIsClicked = 0;
 //当前时刻
 var curTime = 100;
 //当前用户

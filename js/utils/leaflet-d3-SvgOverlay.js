@@ -1,6 +1,6 @@
 (function (factory) {
     if (typeof define === 'function' && define.amd) {
-        define(['leaflet', 'd3'], factory);
+        define(['js/utils/leaflet', 'd3'], factory);
     } else if (typeof module === 'object' && module.exports) {
         module.exports = factory(require('leaflet', 'd3'));
     } else {

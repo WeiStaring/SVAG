@@ -249,9 +249,9 @@ function changeTemporalFlowData() {
 
         boxMarkerLayer.addLayer(circleMarker);
     });
+    clearInfoUp();
 
-    let divTab = d3.select(".info-frame");
-    divTab.html("");
+    let divTab = d3.select("#info_frame_up");
     divTab.style('text-align', 'center')
         .append('text')
         .attr("id", "info-title")
@@ -263,11 +263,11 @@ function changeTemporalFlowData() {
     divTab.append("div")
         .attr("id", "info-list")
         .style('text-align', 'left')
-        .style('width', "95%")
-        .style('height', "90%")
+        .style('width', "98%")
+        .style('height', "85%")
         .style("overflow", "auto")
-        .style('margin', "2%")
-        .style('padding', "2%")
+        .style('margin', "1%")
+        .style('padding', "0%")
         .style('box-sizing', 'border-box')
         .style('list-style-type', 'none')
         .style("border", `1px solid rgb(232, 226, 217)`)
