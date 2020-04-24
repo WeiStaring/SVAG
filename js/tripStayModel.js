@@ -160,6 +160,13 @@ function drawForceDirectedGraph(){
     svg.attr('width',width)
         .attr('height',height);
 
+    svg.append("text")
+        .attr("y", 25)
+        .attr("x", 110)
+        .attr("fill","white")
+        .attr("font-size",20)
+        .text("出行数据力导向图");
+
     var g = svg.append('g').attr('transform','translate(0,0)');
     let tripedges = tripData[curTime];
     let set = new Set();
