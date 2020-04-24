@@ -76,6 +76,12 @@ function tripStayinfo(plot=0) {
     info_svg_up
         .attr('width',width)
         .attr('height',height);
+    info_svg_up.append("text")
+        .attr("y", 25)
+        .attr("x", 110)
+        .attr("fill","white")
+        .attr("font-size",20)
+        .text("不知道起什么名字");
 
     let tempTripInData=[],tempTripOutData=[],tempStayData=[];
     for(let i=0;i<288;i++){
