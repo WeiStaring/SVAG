@@ -3,7 +3,7 @@ function drawTripStayLayer() {
     tripStayLayer.addLayer(boxLayer);
     tripStayLayer.addLayer(tripLayer);
     tripStayinfo();
-    drawForceDirectedGraph();
+
 }
 function changeTripStayData() {
     let tripLineList=[];
@@ -64,6 +64,7 @@ function changeTripStayData() {
             "interactive": true,
         });
     tripLayer.addLayer(tripSvgLayer);
+    drawForceDirectedGraph();
 }
 
 function tripStayinfo() {
@@ -173,7 +174,9 @@ function cleanTripLayer() {
 }
 
 function drawForceDirectedGraph(){
-    var marge = {top:0,right:0,bottom:0,left:0}
+    var marge = {top:0,right:0,bottom:0,left:0};
+    d3.select('#info_frame_down').selectAll('svg').remove();
+    console.log(curTime);
     var svg = d3.select('#info_frame_down').append('svg').attr('width',380).attr('height',345);
     var width = svg.attr('width');
     var height = svg.attr('height');
@@ -184,10 +187,18 @@ function drawForceDirectedGraph(){
         set.add(Number(tripedges[i].source));
         set.add(Number(tripedges[i].target));
     }
+    let tempStayData = stayData[curTime];
+    console.log(tempStayData);
     let nodes=[];
     for (let item of set) {
+        console.log(item);
+        let stay=1;
+        if(tempStayData.hasOwnProperty(String(item))){
+            stay = tempStayData[item];
+        }
         let nd={
-            "name":String(item)
+            "name":String(item),
+            "stay":stay
         };
         nodes.push(nd);
     }
@@ -198,7 +209,6 @@ function drawForceDirectedGraph(){
         map.set(val,cnt);
         cnt++;
     }
-    console.log(map);
     let edges=[];
     for(let i=0;i<tripedges.length;i++){
         let start = Number(tripedges[i].source);
@@ -223,14 +233,28 @@ function drawForceDirectedGraph(){
     forceSimulation.force('link')
         .links(edges)
         .distance(function(d){
-        return d.value*100;
-        })
+        return d.value*50;
+        });
     // 力导向图中心位置
     forceSimulation.force('center')
         .x(width/2)
         .y(height/2);
-    console.log(nodes);
-    console.log(edges);
+    let marker=
+        svg.append("marker")
+        //.attr("id", function(d) { return d; })
+            .attr("id", "resolved")
+            //.attr("markerUnits","strokeWidth")//设置为strokeWidth箭头会随着线的粗细发生变化
+            .attr("markerUnits","userSpaceOnUse")
+            .attr("viewBox", "0 -5 10 10")//坐标系的区域
+            .attr("refX",32)//箭头坐标
+            .attr("refY", -1)
+            .attr("markerWidth", 6)//标识的大小
+            .attr("markerHeight", 6)
+            .attr("orient", "auto")//绘制方向，可设定为：auto（自动确认方向）和 角度值
+            .attr("stroke-width",2)//箭头宽度
+            .append("path")
+            .attr("d", "M0,-5L10,0L0,5")//箭头的路径
+            .attr('fill','#000000');//箭头颜色
     // 边
     var links = g.append('g')
         .selectAll('line')
@@ -238,18 +262,14 @@ function drawForceDirectedGraph(){
         .enter()
         .append('line')
         .attr('stroke',function(d,i){
-        return colorScale(i);
+            return 'black';
         })
-        .attr('stroke-width',1)
+        .attr('stroke-width',function (d,i) {
+            return d.value;
+        })
+        .attr("marker-end", "url(#resolved)" );
     // 边上的文字
-/*    var linksText = g.append('g')
-        .selectAll('text')
-        .data(edges)
-        .enter()
-        .append('text')
-        .text(function(d,i){
-        return d.relation;
-        })*/
+
     //节点
     var gs = g.selectAll('.node')
         .data(nodes)
@@ -260,12 +280,14 @@ function drawForceDirectedGraph(){
         .on('start',started)
         .on('drag',dragged)
         .on('end',ended)
-        )
+        );
     gs.append('circle')
-        .attr('r',10)
-        .attr('fill',function(d,i){
-        return colorScale(i);
+        .attr('r',function (d,i) {
+            return d.stay;
         })
+        .attr('fill',function(d,i){
+        return '#ccc';
+        });
     gs.append('text')
         .text(function(d,i){
         return d.name;
@@ -274,10 +296,11 @@ function drawForceDirectedGraph(){
         .attr('height',30)
         .attr('text-anchor','middle')
         .attr('x',0)
-        .attr('y',-30)
+        .attr('y',-10)
         .attr('fill',function(d,i){
-        return colorScale(i);
+        return 'black';
         })
+        .style('font-size',10);
     function started(d){
         if(!d3.event.active){
         forceSimulation.alphaTarget(0.8).restart();
@@ -300,19 +323,19 @@ function drawForceDirectedGraph(){
         // 线的位置
         links.attr('x1',function(d){
         return d.source.x;
-        })
+        });
 
         links.attr('y1',function(d){
         return d.source.y;
-        })
+        });
 
         links.attr('x2',function(d){
         return d.target.x;
-        })
+        });
 
         links.attr('y2',function(d){
         return d.target.y;
-        })
+        });
         // 线上的文字的位置
 /*        linksText.attr('x',function(d){
         return (d.source.x+d.target.x)/2;
@@ -325,6 +348,4 @@ function drawForceDirectedGraph(){
         return 'translate('+d.x+','+d.y+')';
         })
     }
-    console.log(tripData[curTime]);
-    console.log(edges);
 }
