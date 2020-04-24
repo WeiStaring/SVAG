@@ -154,9 +154,11 @@ function cleanTripLayer() {
 
 function drawForceDirectedGraph(){
     var marge = {top:0,right:0,bottom:0,left:0};
+    var width=380;
+    var height=345;
     d3.select('#info_frame_down').selectAll('svg').remove();
     console.log(curTime);
-    var svg = d3.select('#info_frame_down').append('svg').attr('width',380).attr('height',345);
+    var svg = d3.select('#info_frame_down').append('svg').attr('width',width).attr('height',height);
     var width = svg.attr('width');
     var height = svg.attr('height');
     var g = svg.append('g').attr('transform','translate('+marge.left+','+marge.top+')');
@@ -301,19 +303,19 @@ function drawForceDirectedGraph(){
     function render(){
         // 线的位置
         links.attr('x1',function(d){
-        return d.source.x;
+        return validateXY(d.source.x,'x');
         });
 
         links.attr('y1',function(d){
-        return d.source.y;
+        return validateXY(d.source.y,'y');
         });
 
         links.attr('x2',function(d){
-        return d.target.x;
+        return validateXY(d.target.x,'x');
         });
 
         links.attr('y2',function(d){
-        return d.target.y;
+        return validateXY(d.target.y,'y');
         });
         // 线上的文字的位置
 /*        linksText.attr('x',function(d){
@@ -324,7 +326,19 @@ function drawForceDirectedGraph(){
         })*/
         //圆点的位置
         gs.attr('transform',function(d,i){
-        return 'translate('+d.x+','+d.y+')';
+        return 'translate('+validateXY(d.x,'x')+','+validateXY(d.y,'y')+')';
         })
+    }
+    function validateXY(val,type){
+        var r = 20;
+        if(val < r) return r;
+        if(type=='x'){
+            if(val < 0) return r;
+            if(val>width) return width-r;
+        }else{
+            if(val < 0) return r;
+            if(val > height) return height-r;
+        }
+        return val;
     }
 }
