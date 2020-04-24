@@ -148,6 +148,10 @@
             };
             this.projection.pathFromGeojson =
                 d3.geoPath(d3.geoTransform({ point: this.projection._projectPoint }));
+            //将经纬度点转化为像素点
+            this.projection.Point = function (pt) {
+                return _layer.projection.latLngToLayerPoint(new L.LatLng(pt[1], pt[0]));
+            };
 
             this.projection.latLngToLayerFloatPoint = this.projection.latLngToLayerPoint;
             this.projection.getZoom = this.map.getZoom.bind(this.map);
