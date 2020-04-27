@@ -40,8 +40,8 @@ function changeTripStayData() {
             },
             "geometry": {
                 "type": "LineString",
-                "coordinates": [[start.latitude, start.longitude],
-                    [end.latitude, end.longitude]]
+                "coordinates": [[start.longitude, start.latitude],
+                    [end.longitude, end.latitude]]
             }
         };
         tripLineList.push(tripLine);
