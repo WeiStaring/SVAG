@@ -9,7 +9,7 @@ d3.select("#flowBtn")
         cleanInfoDown();
         addFlowLayer();
         drawArea();
-
+        drawMatrixPlot();
     });
 
 d3.select("#tripBtn")

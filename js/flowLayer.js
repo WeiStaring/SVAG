@@ -181,6 +181,61 @@ function changeHeatmapData() {
     heatmapLayer.addLayer(heatmap);
 }
 
+function drawMatrixPlot() {
+    function makeMatrixData() {
+        let res=[];
+        for(let row in temporalFlowData){
+            res.push(temporalFlowData[row])
+        }
+        return res;
+    }
+    cleanInfoDown();
+    let margin={left:25,top:25,right:25,bottom:25};
+    let info_svg_down = d3.select("#info_frame_down").append('svg');
+    const width = info_svg_down.node().parentNode.clientWidth;
+    const height = info_svg_down.node().parentNode.clientHeight;
+    info_svg_down
+        .attr('width',width)
+        .attr('height',height);
+
+    let linear = d3.scaleLinear()
+        .domain([0, 30])
+        .range([0, 1]);
+    let color = d3.interpolate('white','red');
+    let mat = makeMatrixData();
+    console.log(mat);
+    //draw
+    let matG = info_svg_down.append('g')
+        .attr('transform',`translate(${margin.left},${margin.right})`);
+    let cellSizeX=1.5,cellSizeY=14;
+    for(let i=0;i<mat.length;i++){
+        for(let j=0;j<mat[0].length;j++){
+            matG.append("rect")
+                .attr("width", cellSizeY)
+                .attr("height", cellSizeX)
+                .attr("x", j * cellSizeY)
+                .attr("y", i * cellSizeX)
+                .attr("fill", color(linear(mat[i][j])))
+                .attr('stroke-width',0.1);
+        }
+    }
+    let textG = info_svg_down.append('g')
+        .attr('transform',`translate(${margin.left},${height-margin.bottom+10})`);
+    textG.selectAll('text')
+        .data([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23])
+        .enter()
+        .append('text')
+        .text(function (d) {
+            return d;
+        }).attr('transform',function (d,i) {
+            if(i<10)
+                return `translate(${i*cellSizeY+6},${0})`;
+            else
+                return `translate(${i*cellSizeY+3},${0})`;
+
+    }).style('font-size',10);
+
+}
 //更新t时刻的特定地点时序流量图层
 function changeTemporalFlowData() {
     let t = curTime;
