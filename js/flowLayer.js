@@ -190,13 +190,16 @@ function drawMatrixPlot() {
         return res;
     }
     cleanInfoDown();
+    d3.select('#info_frame_down_title')
+        .text('矩阵图');
     let margin={left:25,top:25,right:25,bottom:25};
     let info_svg_down = d3.select("#info_frame_down").append('svg');
     const width = info_svg_down.node().parentNode.clientWidth;
     const height = info_svg_down.node().parentNode.clientHeight;
     info_svg_down
         .attr('width',width)
-        .attr('height',height);
+        .attr('height',height-margin.top)
+        .attr('transform','translate(0,-10)');
 
     let linear = d3.scaleLinear()
         .domain([0, 30])
@@ -220,7 +223,7 @@ function drawMatrixPlot() {
         }
     }
     let textG = info_svg_down.append('g')
-        .attr('transform',`translate(${margin.left},${height-margin.bottom+10})`);
+        .attr('transform',`translate(${margin.left},${margin.top})`);
     textG.selectAll('text')
         .data([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23])
         .enter()
@@ -234,7 +237,76 @@ function drawMatrixPlot() {
                 return `translate(${i*cellSizeY+3},${0})`;
 
     }).style('font-size',10);
+}
 
+function drawBarPlot() {
+    clearInfoUp();
+    let margin={left:25,top:25,right:25,bottom:25};
+    d3.select('#info_frame_up_title')
+        .text('柱状图');
+    let info_svg_up = d3.select("#info_frame_up").append('svg');
+    const width = info_svg_up.node().parentNode.clientWidth;
+    const height = info_svg_up.node().parentNode.clientHeight-margin.top;
+    info_svg_up
+        .attr('width',width)
+        .attr('height',height)
+        .attr('transform','translate(0,0)');
+
+    function makeBarData(){
+        let data = [];
+        let t = curTime;
+        for(let key in spaceVolumeData[t]){
+            data.push([key,spaceVolumeData[t][key]])
+        }
+        data = data.sort(function (a,b) {
+            return b[1]-a[1];
+        });
+        return data;
+    }
+    let data = makeBarData();
+    let xScale = d3.scaleBand().domain(d3.range(data.length)).range([0,width-margin.left-margin.left]);
+    let yScale = d3.scaleLinear().domain([0,d3.max(data,d=>d[1])+1]).range([0,height-margin.top-margin.bottom]);
+    let rectPad=10;
+    info_svg_up.append('g')
+        .attr('transform',`translate(${margin.left},${margin.top})`)
+        .selectAll('rect')
+        .data(data)
+        .enter()
+        .append('rect')
+        .attr("width", rectPad)
+        .attr("height", function (d,i) {
+            return yScale(d[1]);
+        })
+        .attr("x", function (d,i) {
+            return xScale(i) + rectPad / 2;
+        })
+        .attr("y", function (d,i) {
+            return height - margin.top - margin.bottom- yScale(d[1]);
+        })
+        .attr('fill','white');
+    info_svg_up.append('g')
+        .attr('transform',`translate(${margin.left},${height-margin.top})`)
+        .selectAll('text')
+        .data(data)
+        .enter()
+        .append('text')
+        .text(function (d) {
+            return d[0];
+        }).attr('transform',function (d,i) {
+            return `translate(${xScale(i) + rectPad / 2},${10})`;
+    }).style('font-size',10);
+
+    info_svg_up.append('g')
+        .attr('transform',`translate(${margin.left},${margin.top})`)
+        .selectAll('text')
+        .data(data)
+        .enter()
+        .append('text')
+        .text(function (d) {
+            return d[1];
+        }).attr('transform',function (d,i) {
+        return `translate(${xScale(i) + rectPad / 2},${height - margin.top - margin.bottom- yScale(d[1])-10})`;
+    }).style('font-size',10);
 }
 //更新t时刻的特定地点时序流量图层
 function changeTemporalFlowData() {
@@ -246,7 +318,6 @@ function changeTemporalFlowData() {
     //清除原有图层
     boxMarkerLayer.clearLayers();
     temporalFlowLayer.clearLayers();
-    d3.select(".info-frame").html("");
 
     let rankList = [];
     let sortList = Array.from(Array(stationBoxesMap.length), (item, index) => index);
@@ -256,7 +327,7 @@ function changeTemporalFlowData() {
         return vb - va;
     });
 
-    for (i in sortList) {
+    for (let i in sortList) {
         rankList[sortList[i]] = i;
     }
 
@@ -304,54 +375,10 @@ function changeTemporalFlowData() {
 
         boxMarkerLayer.addLayer(circleMarker);
     });
-    clearInfoUp();
-
-    let divTab = d3.select("#info_frame_up");
-    divTab.style('text-align', 'center')
-        .append('text')
-        .attr("id", "info-title")
-        .style('display', 'inline-block')
-        .style('font-size', 'small')
-        .style('font-weight', 700)
-        .text("区域流量排名");
-
-    divTab.append("div")
-        .attr("id", "info-list")
-        .style('text-align', 'left')
-        .style('width', "98%")
-        .style('height', "85%")
-        .style("overflow", "auto")
-        .style('margin', "1%")
-        .style('padding', "0%")
-        .style('box-sizing', 'border-box')
-        .style('list-style-type', 'none')
-        .style("border", `1px solid rgb(232, 226, 217)`)
-        .style("border-radius", "2px");
-
-    let userTab = d3.select("#info-list")
-        .append("table")
-        .attr("id", "info-user-table");
-
-    userTab.append("tr")
-        .html(`<th>排名</th> <th>编号</th> <th>流量</th>`);
-
-    userTab.selectAll("#liRank")
-        .data(sortList)
-        .join('tr')
-        .attr("id", "liRank")
-        .html((d, i) => {
-            let temp =d in spaceVolumeData[t] ? spaceVolumeData[t][d] : 0;
-            if(temp!=0)
-                return `<td>No.${i+1}</td> <td>${d}</td> <td>${(d in spaceVolumeData[t] ? spaceVolumeData[t][d] : 0)}</td>`;
-        })
-        .on("click", function (d) {
-            d3.selectAll("#liRank").style('background', "white");
-            d3.select(this).style('background', "rgb(215, 228, 233)").attr("isClick", "true");
-            boxMarkerLayer.getLayers()[d].options.isClick = false;
-            boxMarkerLayer.getLayers()[d].fire("click");
-        });
-
+    drawBarPlot();
 }
+
+
 
 
 //初始化交通流量图层

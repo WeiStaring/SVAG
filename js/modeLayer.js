@@ -115,22 +115,15 @@ function initTrackLayer() {
 
 function drawInfoTable() {
     clearInfoUp();
+    d3.select('#info_frame_up_title')
+        .text('用户轨迹语义轴图');
 
     let divTab = d3.select("#info_frame_up");
-
     let divUser = divTab.append("div")
         .attr("id", "info-user")
         .style('width', "100%")
         .style('height', "95%")
         .style("margin", "0 0 5px 0");
-
-    divUser.style('text-align', 'center')
-        .append('text')
-        .attr("id", "info-user-title")
-        .style('display', 'inline-block')
-        .style('font-size', 'small')
-        .style('font-weight', 700)
-        .text("用户轨迹语义轴");
 
     divUser.append("div")
         .attr("id", "info-user-list")
@@ -202,11 +195,9 @@ function drawInfoTable() {
 
 function drawParaAxis(data) {
     cleanInfoDown();
-    d3.select('#info_frame_down')
-        .append('text')
-        .text('轨迹信息总览视图')
-        .style('float','left')
-        .style('padding-left', '1em');
+    d3.select('#info_frame_down_title')
+        .text('轨迹信息总览视图');
+
     //画选择器
     d3.select('#info_frame_down').append("select")
         .style("float", "right")
@@ -235,13 +226,14 @@ function drawParaAxis(data) {
         .property("selected",function(d){ return d === 'car'; })
         .text(function(d){ return d; });
     //画svg
-
+    var margin = {top:25,bottom:25,left:25,right:25};
     let svg = d3.select('#info_frame_down').append('svg');
     svg.selectAll('g').remove();
     const width = svg.node().parentNode.clientWidth;
-    const height = svg.node().parentNode.clientHeight-50;
-    svg.attr("width", width).attr("height", height);
-    var margin = {top:35,bottom:25,left:15,right:15};
+    const height = svg.node().parentNode.clientHeight-margin.top;
+    svg.attr('width',width)
+        .attr('height',height)
+        .attr('transform','translate(0,0)');
     //数据
     let dataTemp=[];
     for(let i in data){

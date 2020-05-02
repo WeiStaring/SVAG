@@ -10,6 +10,7 @@ d3.select("#flowBtn")
         addFlowLayer();
         drawArea();
         drawMatrixPlot();
+        drawBarPlot();
     });
 
 d3.select("#tripBtn")

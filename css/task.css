@@ -27,3 +27,15 @@
     color: #ffffff;
     background: rgba(157, 255, 235, 0.45);
 }
+
+.title_button{
+    display:inline;
+    border-width: 0px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #000000;
+    font-size: 16px;
+    text-align: center;
+    margin-right:2px;
+    margin-left:2px;
+}

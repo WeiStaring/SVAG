@@ -72,16 +72,14 @@ function tripStayinfo(plot=0) {
     clearInfoUp();
     let info_svg_up = d3.select("#info_frame_up").append('svg');
     const width = info_svg_up.node().parentNode.clientWidth;
-    const height = info_svg_up.node().parentNode.clientHeight;
+    const height = info_svg_up.node().parentNode.clientHeight-margin.top;
     info_svg_up
         .attr('width',width)
-        .attr('height',height);
-    info_svg_up.append("text")
-        .attr("y", 25)
-        .attr("x", 110)
-        .attr("fill","white")
-        .attr("font-size",20)
-        .text("不知道起什么名字");
+        .attr('height',height)
+        .attr('transform','translate(0,0)');
+
+    d3.select('#info_frame_up_title')
+        .text('折线图');
 
     let tempTripInData=[],tempTripOutData=[],tempStayData=[];
     for(let i=0;i<288;i++){
@@ -157,23 +155,22 @@ function cleanTripLayer() {
 }
 
 function drawForceDirectedGraph(){
-    var marge = {top:20,right:10,bottom:20,left:10};
+    let margin={left:25,top:25,right:25,bottom:25};
 
     d3.select('#info_frame_down').selectAll('svg').remove();
+
+    d3.select('#info_frame_down_title')
+        .text('力导向图');
+
     var svg = d3.select('#info_frame_down').append('svg');
     const width = svg.node().parentNode.clientWidth;
-    const height = svg.node().parentNode.clientHeight;
-    svg.attr('width',width)
-        .attr('height',height);
+    const height = svg.node().parentNode.clientHeight-margin.top;
+    svg
+        .attr('width',width)
+        .attr('height',height)
+        .attr('transform','translate(0,0)');
 
-    svg.append("text")
-        .attr("y", 25)
-        .attr("x", 110)
-        .attr("fill","white")
-        .attr("font-size",20)
-        .text("出行数据力导向图");
-
-    var g = svg.append('g').attr('transform','translate(0,0)');
+    var g = svg.append('g');
     let tripedges = tripData[curTime];
     let set = new Set();
     for(let i=0;i<tripedges.length;i++){
