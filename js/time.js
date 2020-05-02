@@ -6,6 +6,11 @@ var svgTime = d3.select(".time-slider")
 
 const width = svgTime.node().parentNode.clientWidth;
 const height = svgTime.node().parentNode.clientHeight;
+
+var timetitle=d3.select(".time-title");
+timetitle.text('时间轴');
+const h=timetitle.node().parentNode.clientHeight;
+
 let margin = {top: 10, right: 35, bottom: 30, left: 35};
 var xScale = d3.scaleTime()
     .domain([new Date(2018, 9, 3, 0, 0, 0), new Date(2018, 9, 3, 24, 0, 0)])//d3.extent(sumFlowData, d => d.time)

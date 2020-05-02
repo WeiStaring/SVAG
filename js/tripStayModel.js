@@ -81,6 +81,56 @@ function tripStayinfo(plot=0) {
     d3.select('#info_frame_up_title')
         .text('折线图');
 
+    let legend=info_svg_up.append('g');
+    let lgline1=legend.append('line')
+        .attr('x1',100)
+        .attr('y1',8)
+        .attr('x2',120)
+        .attr('y2',8)
+        .attr('stroke','#e5a1a1')
+        .attr('stroke-width',5);
+    let lgtext1=legend.append('text')
+        .attr('class','legend-label')
+        .attr("dy",-6)
+        .attr("dx",110)
+        .style("text-anchor","start")
+        .text("驻留")
+        .attr('fill','white')
+        .attr('font-size','13')
+        .attr("transform","translate("+18+","+20+")");
+    let lgline2=legend.append('line')
+        .attr('x1',180)
+        .attr('y1',8)
+        .attr('x2',200)
+        .attr('y2',8)
+        .attr('stroke','#b2e0a1')
+        .attr('stroke-width',5);
+    let lgtext2=legend.append('text')
+        .attr('class','legend-label')
+        .attr("dy",-6)
+        .attr("dx",190)
+        .style("text-anchor","start")
+        .text("流入")
+        .attr('fill','white')
+        .attr('font-size','13')
+        .attr("transform","translate("+18+","+20+")");
+    let lgline3=legend.append('line')
+        .attr('x1',250)
+        .attr('y1',8)
+        .attr('x2',270)
+        .attr('y2',8)
+        .attr('stroke','#91b7f1')
+        .attr('stroke-width',5);
+    let lgtext3=legend.append('text')
+        .attr('class','legend-label')
+        .attr("dy",-6)
+        .attr("dx",260)
+        .style("text-anchor","start")
+        .text("流出")
+        .attr('fill','white')
+        .attr('font-size','13')
+        .attr("transform","translate("+18+","+20+")");
+
     let tempTripInData=[],tempTripOutData=[],tempStayData=[];
     for(let i=0;i<288;i++){
         tempTripInData.push(0);
@@ -130,21 +180,21 @@ function tripStayinfo(plot=0) {
     info_svg_up.append('g').append("path")
         .attr("d",line_generator(tempTripInData))
         .style("stroke-width", 1)
-        .style("stroke",'red')
+        .style("stroke",'#e5a1a1')
         .style("fill", "none")
         .style('stroke-opacity', 1);
 
     info_svg_up.append('g').append("path")
         .attr("d",line_generator(tempTripOutData))
         .style("stroke-width", 1)
-        .style("stroke",'blue')
+        .style("stroke",'#b2e0a1')
         .style("fill", "none")
         .style('stroke-opacity', 1);
 
     info_svg_up.append('g').append("path")
         .attr("d",line_generator(tempStayData))
         .style("stroke-width", 1)
-        .style("stroke",'green')
+        .style("stroke",'#91b7f1')
         .style("fill", "none")
         .style('stroke-opacity', 1);
 }

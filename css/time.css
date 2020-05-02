@@ -35,3 +35,15 @@
 .main-frame>.time-frame>.time-clock>span:hover {
     color:#40a9ff;
 }
+
+.main-frame>.time-frame>.time-title{
+    display:inline;
+    border-width: 0px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #000000;
+    font-size: 16px;
+    text-align: center;
+    margin-right:2px;
+    margin-left:2px;
+}
