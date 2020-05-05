@@ -5,32 +5,55 @@ function drawTripStayLayer() {
     tripStayinfo();
 }
 function changeTripStayData() {
-    let tripLineList=[];
+    let tripLineList = [];
     tripLayer.clearLayers();
     boxLayer.clearLayers();
-    stationBoxesMap.forEach((plott, i) => {
-        let stay = stayData[curTime];
-        let r = 1;
-        if(stay.hasOwnProperty(plott.id)){
-            r = stay[plott.id]/2+1;
+
+    //添加方格图层
+    let circleMarker = L.d3SvgOverlay(function (selection, projection) {
+        var geojsonBox = [];
+        for (let i = 0; i < stationBoxesMap.length; i++) {
+            let stay = stayData[curTime];
+            let r = 1;
+            if (stay.hasOwnProperty(stationBoxesMap[i].id)) {
+                r = stay[stationBoxesMap[i].id] / 2 + 1;
+            }
+
+            let tmp = {
+                "type": "Feature",
+                "properties": {
+                    "r": r,
+                    "id": stationBoxesMap[i].id,
+                    "isClick": false,
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [stationBoxesMap[i].longitude, stationBoxesMap[i].latitude],
+                }
+            };
+            geojsonBox.push(tmp);
         }
 
-        let circleMarker = L
-            .circleMarker([plott.latitude, plott.longitude], {
-                radius: r,
-                fillColor: "white",
-                color: "grey",
-                weight: 1,
-                opacity: 0.5,
-                fillOpacity: 0.5,
-                isClick: false,
+        selection.selectAll('path')
+            .data(geojsonBox)
+            .join('path')
+            .attr("class", "boxCircle")
+            .attr('d', projection.pathFromGeojson)
+            .style('fill', "white")
+            .style('stroke', "grey")
+            .style('opacity', '0.5')
+            .style('stroke-width', d => {
+                return d.properties.r / projection.scale;
             });
-
-        boxLayer.addLayer(circleMarker);
+    }, {
+        "zoomDraw": false,
+        "zoomAble": true,
+        "interactive": true,
     });
+    boxLayer.addLayer(circleMarker);
 
     let trips = tripData[curTime];
-    for(let i =0;i<trips.length;i++){
+    for (let i = 0; i < trips.length; i++) {
         let start = stationBoxesMap[trips[i].source];
         let end = stationBoxesMap[trips[i].target];
         let tripLine = {
@@ -41,7 +64,7 @@ function changeTripStayData() {
             "geometry": {
                 "type": "LineString",
                 "coordinates": [[start.longitude, start.latitude],
-                    [end.longitude, end.latitude]]
+                [end.longitude, end.latitude]]
             }
         };
         tripLineList.push(tripLine);
@@ -54,122 +77,122 @@ function changeTripStayData() {
             .style('stroke', 'white')
             .style('opacity', '0.75')
             .style('stroke-width', d => {
-                d.properties.width = d.properties.weight*2 / projection.scale;
+                d.properties.width = d.properties.weight * 2 / projection.scale;
                 return d.properties.width;
             });
-        }, {
-            "zoomDraw": false,
-            "zoomAble": true,
-            "interactive": true,
-        });
+    }, {
+        "zoomDraw": false,
+        "zoomAble": true,
+        "interactive": true,
+    });
     tripLayer.addLayer(tripSvgLayer);
-    if(tripStayButtonIsClicked==1)
+    if (tripStayButtonIsClicked == 1)
         drawForceDirectedGraph();
 }
 
-function tripStayinfo(plot=0) {
-    let margin={left:25,top:25,right:25,bottom:25};
+function tripStayinfo(plot = 0) {
+    let margin = { left: 25, top: 25, right: 25, bottom: 25 };
     clearInfoUp();
     let info_svg_up = d3.select("#info_frame_up").append('svg');
     const width = info_svg_up.node().parentNode.clientWidth;
-    const height = info_svg_up.node().parentNode.clientHeight-margin.top;
+    const height = info_svg_up.node().parentNode.clientHeight - margin.top;
     info_svg_up
-        .attr('width',width)
-        .attr('height',height)
-        .attr('transform','translate(0,0)');
+        .attr('width', width)
+        .attr('height', height)
+        .attr('transform', 'translate(0,0)');
 
     d3.select('#info_frame_up_title')
         .text('折线图');
 
-    let legend=info_svg_up.append('g');
-    let lgline1=legend.append('line')
-        .attr('x1',100)
-        .attr('y1',8)
-        .attr('x2',120)
-        .attr('y2',8)
-        .attr('stroke','#e5a1a1')
-        .attr('stroke-width',5);
-    let lgtext1=legend.append('text')
-        .attr('class','legend-label')
-        .attr("dy",-6)
-        .attr("dx",110)
-        .style("text-anchor","start")
+    let legend = info_svg_up.append('g');
+    let lgline1 = legend.append('line')
+        .attr('x1', 100)
+        .attr('y1', 8)
+        .attr('x2', 120)
+        .attr('y2', 8)
+        .attr('stroke', '#e5a1a1')
+        .attr('stroke-width', 5);
+    let lgtext1 = legend.append('text')
+        .attr('class', 'legend-label')
+        .attr("dy", -6)
+        .attr("dx", 110)
+        .style("text-anchor", "start")
         .text("驻留")
-        .attr('fill','white')
-        .attr('font-size','13')
-        .attr("transform","translate("+18+","+20+")");
-    let lgline2=legend.append('line')
-        .attr('x1',180)
-        .attr('y1',8)
-        .attr('x2',200)
-        .attr('y2',8)
-        .attr('stroke','#b2e0a1')
-        .attr('stroke-width',5);
-    let lgtext2=legend.append('text')
-        .attr('class','legend-label')
-        .attr("dy",-6)
-        .attr("dx",190)
-        .style("text-anchor","start")
+        .attr('fill', 'white')
+        .attr('font-size', '13')
+        .attr("transform", "translate(" + 18 + "," + 20 + ")");
+    let lgline2 = legend.append('line')
+        .attr('x1', 180)
+        .attr('y1', 8)
+        .attr('x2', 200)
+        .attr('y2', 8)
+        .attr('stroke', '#b2e0a1')
+        .attr('stroke-width', 5);
+    let lgtext2 = legend.append('text')
+        .attr('class', 'legend-label')
+        .attr("dy", -6)
+        .attr("dx", 190)
+        .style("text-anchor", "start")
         .text("流入")
-        .attr('fill','white')
-        .attr('font-size','13')
-        .attr("transform","translate("+18+","+20+")");
-    let lgline3=legend.append('line')
-        .attr('x1',250)
-        .attr('y1',8)
-        .attr('x2',270)
-        .attr('y2',8)
-        .attr('stroke','#91b7f1')
-        .attr('stroke-width',5);
-    let lgtext3=legend.append('text')
-        .attr('class','legend-label')
-        .attr("dy",-6)
-        .attr("dx",260)
-        .style("text-anchor","start")
+        .attr('fill', 'white')
+        .attr('font-size', '13')
+        .attr("transform", "translate(" + 18 + "," + 20 + ")");
+    let lgline3 = legend.append('line')
+        .attr('x1', 250)
+        .attr('y1', 8)
+        .attr('x2', 270)
+        .attr('y2', 8)
+        .attr('stroke', '#91b7f1')
+        .attr('stroke-width', 5);
+    let lgtext3 = legend.append('text')
+        .attr('class', 'legend-label')
+        .attr("dy", -6)
+        .attr("dx", 260)
+        .style("text-anchor", "start")
         .text("流出")
-        .attr('fill','white')
-        .attr('font-size','13')
-        .attr("transform","translate("+18+","+20+")");
+        .attr('fill', 'white')
+        .attr('font-size', '13')
+        .attr("transform", "translate(" + 18 + "," + 20 + ")");
 
-    let tempTripInData=[],tempTripOutData=[],tempStayData=[];
-    for(let i=0;i<288;i++){
+    let tempTripInData = [], tempTripOutData = [], tempStayData = [];
+    for (let i = 0; i < 288; i++) {
         tempTripInData.push(0);
         tempTripOutData.push(0);
         tempStayData.push(0);
     }
-    for(let i=0;i<288;i++){
+    for (let i = 0; i < 288; i++) {
         if (stayData[i].hasOwnProperty(plot))
-            tempStayData[i]=stayData[i][plot];
-        for(let k=0;k<tripData[i].length;k++){
-            if(tripData[i][k].source==plot){
-                tempTripOutData[i]+=tripData[i][k].weight
+            tempStayData[i] = stayData[i][plot];
+        for (let k = 0; k < tripData[i].length; k++) {
+            if (tripData[i][k].source == plot) {
+                tempTripOutData[i] += tripData[i][k].weight
             }
-            if(tripData[i][k].target==plot){
-                tempTripInData[i]+=tripData[i][k].weight
+            if (tripData[i][k].target == plot) {
+                tempTripInData[i] += tripData[i][k].weight
             }
         }
     }
 
-    var scale_x=d3.scaleLinear()
-        .domain([0,288])
-        .range([margin.left,width-margin.right]);
-    var scale_y=d3.scaleLinear()
-        .domain([0,Math.max(d3.max(tempTripInData),d3.max(tempTripOutData),d3.max(tempStayData))])
-        .range([height-margin.bottom,margin.top]);
-// 画轴
+    var scale_x = d3.scaleLinear()
+        .domain([0, 288])
+        .range([margin.left, width - margin.right]);
+    var scale_y = d3.scaleLinear()
+        .domain([0, Math.max(d3.max(tempTripInData), d3.max(tempTripOutData), d3.max(tempStayData))])
+        .range([height - margin.bottom, margin.top]);
+    // 画轴
 
     var yAxis = d3.axisLeft(scale_y).ticks(5);
     var xAxis = d3.axisBottom(scale_x).ticks(5);
     info_svg_up.append('g')
-        .attr("transform",`translate(0,${height-margin.bottom})`)
+        .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(xAxis);
     info_svg_up.append('g')
-        .attr("transform",`translate(${margin.left},0)`)
+        .attr("transform", `translate(${margin.left},0)`)
         .call(yAxis);
 
-//画线函数
-    var line_generator= d3.line()
-        .x(function (d,i) {
+    //画线函数
+    var line_generator = d3.line()
+        .x(function (d, i) {
             return scale_x(i);
         })
         .y(function (d) {
@@ -178,23 +201,23 @@ function tripStayinfo(plot=0) {
         .curve(d3.curveMonotoneX);
 
     info_svg_up.append('g').append("path")
-        .attr("d",line_generator(tempTripInData))
+        .attr("d", line_generator(tempTripInData))
         .style("stroke-width", 1)
-        .style("stroke",'#e5a1a1')
+        .style("stroke", '#e5a1a1')
         .style("fill", "none")
         .style('stroke-opacity', 1);
 
     info_svg_up.append('g').append("path")
-        .attr("d",line_generator(tempTripOutData))
+        .attr("d", line_generator(tempTripOutData))
         .style("stroke-width", 1)
-        .style("stroke",'#b2e0a1')
+        .style("stroke", '#b2e0a1')
         .style("fill", "none")
         .style('stroke-opacity', 1);
 
     info_svg_up.append('g').append("path")
-        .attr("d",line_generator(tempStayData))
+        .attr("d", line_generator(tempStayData))
         .style("stroke-width", 1)
-        .style("stroke",'#91b7f1')
+        .style("stroke", '#91b7f1')
         .style("fill", "none")
         .style('stroke-opacity', 1);
 }
@@ -204,8 +227,8 @@ function cleanTripLayer() {
     tripStayLayer.removeLayer(tripLayer);
 }
 
-function drawForceDirectedGraph(){
-    let margin={left:25,top:25,right:25,bottom:25};
+function drawForceDirectedGraph() {
+    let margin = { left: 25, top: 25, right: 25, bottom: 25 };
 
     d3.select('#info_frame_down').selectAll('svg').remove();
 
@@ -214,100 +237,100 @@ function drawForceDirectedGraph(){
 
     var svg = d3.select('#info_frame_down').append('svg');
     const width = svg.node().parentNode.clientWidth;
-    const height = svg.node().parentNode.clientHeight-margin.top;
+    const height = svg.node().parentNode.clientHeight - margin.top;
     svg
-        .attr('width',width)
-        .attr('height',height)
-        .attr('transform','translate(0,0)');
+        .attr('width', width)
+        .attr('height', height)
+        .attr('transform', 'translate(0,0)');
 
     var g = svg.append('g');
     let tripedges = tripData[curTime];
     let set = new Set();
-    for(let i=0;i<tripedges.length;i++){
+    for (let i = 0; i < tripedges.length; i++) {
         set.add(Number(tripedges[i].source));
         set.add(Number(tripedges[i].target));
     }
     let tempStayData = stayData[curTime];
-    console.log(tempStayData);
-    let nodes=[];
+    // console.log(tempStayData);
+    let nodes = [];
     for (let item of set) {
-        console.log(item);
-        let stay=1;
-        if(tempStayData.hasOwnProperty(String(item))){
+        // console.log(item);
+        let stay = 1;
+        if (tempStayData.hasOwnProperty(String(item))) {
             stay = tempStayData[item];
         }
-        let nd={
-            "name":String(item),
-            "stay":stay
+        let nd = {
+            "name": String(item),
+            "stay": stay
         };
         nodes.push(nd);
     }
-    console.log(nodes);    
-    let map=new Map();
-    let cnt=0;
-    for(let val of set.values()) {
-        map.set(val,cnt);
+    console.log(nodes);
+    let map = new Map();
+    let cnt = 0;
+    for (let val of set.values()) {
+        map.set(val, cnt);
         cnt++;
     }
-    let edges=[];
-    for(let i=0;i<tripedges.length;i++){
+    let edges = [];
+    for (let i = 0; i < tripedges.length; i++) {
         let start = Number(tripedges[i].source);
         let end = Number(tripedges[i].target);
-        let ed={
-            "source":map.get(start),
-            "target":map.get(end),
-            "value":tripedges[i].weight
+        let ed = {
+            "source": map.get(start),
+            "target": map.get(end),
+            "value": tripedges[i].weight
         };
         edges.push(ed);
     }
     var colorScale = d3.scaleOrdinal().domain(d3.range(nodes.length)).range(d3.schemeCategory10);
     // 新建力导向图
     var forceSimulation = d3.forceSimulation()
-        .force('link',d3.forceLink())
-        .force('charge',d3.forceManyBody())
-        .force('center',d3.forceCenter());
+        .force('link', d3.forceLink())
+        .force('charge', d3.forceManyBody())
+        .force('center', d3.forceCenter());
     // 生成节点
     forceSimulation.nodes(nodes)
-        .on('tick',render);
+        .on('tick', render);
     // 生成边集
     forceSimulation.force('link')
         .links(edges)
-        .distance(function(d){
-        return d.value*50;
+        .distance(function (d) {
+            return d.value * 50;
         });
     // 力导向图中心位置
     forceSimulation.force('center')
-        .x(width/2)
-        .y(height/2);
-    let marker=
+        .x(width / 2)
+        .y(height / 2);
+    let marker =
         svg.append("marker")
-        //.attr("id", function(d) { return d; })
+            //.attr("id", function(d) { return d; })
             .attr("id", "resolved")
-            .attr("markerUnits","strokeWidth")//设置为strokeWidth箭头会随着线的粗细发生变化
-            .attr("markerUnits","userSpaceOnUse")
+            .attr("markerUnits", "strokeWidth")//设置为strokeWidth箭头会随着线的粗细发生变化
+            .attr("markerUnits", "userSpaceOnUse")
             .attr("viewBox", "0 -5 10 10")//坐标系的区域
-            .attr("refX",32)//箭头坐标
+            .attr("refX", 32)//箭头坐标
             .attr("refY", -1)
             .attr("markerWidth", 6)//标识的大小
             .attr("markerHeight", 6)
             .attr("orient", "auto")//绘制方向，可设定为：auto（自动确认方向）和 角度值
-            .attr("stroke-width",2)//箭头宽度
+            .attr("stroke-width", 2)//箭头宽度
             .append("path")
             .attr("d", "M0,-5L10,0L0,5")//箭头的路径
-            .attr('fill','#000000');//箭头颜色
+            .attr('fill', '#000000');//箭头颜色
     // 边
     var links = g.append('g')
         .selectAll('line')
         .data(edges)
         .enter()
         .append('line')
-        .attr('stroke',function(d,i){
+        .attr('stroke', function (d, i) {
             return 'black';
         })
-        .attr('stroke-width',function (d,i) {
+        .attr('stroke-width', function (d, i) {
             return d.value;
         })
-        .attr("marker-end", "url(#resolved)" );
+        .attr("marker-end", "url(#resolved)");
     // 边上的文字
 
     //节点
@@ -316,87 +339,87 @@ function drawForceDirectedGraph(){
         .enter()
         .append('g')
         .call(
-        d3.drag()
-        .on('start',started)
-        .on('drag',dragged)
-        .on('end',ended)
+            d3.drag()
+                .on('start', started)
+                .on('drag', dragged)
+                .on('end', ended)
         );
     gs.append('circle')
-        .attr('r',function (d,i) {
-            return d.stay*2;
+        .attr('r', function (d, i) {
+            return d.stay * 2;
         })
-        .attr('fill',function(d,i){
-        return '#ccc';
+        .attr('fill', function (d, i) {
+            return '#ccc';
         });
     gs.append('text')
-        .text(function(d,i){
-        return d.name;
+        .text(function (d, i) {
+            return d.name;
         })
-        .attr('width',100)
-        .attr('height',30)
-        .attr('text-anchor','middle')
-        .attr('x',0)
-        .attr('y',-10)
-        .attr('fill',function(d,i){
-        return 'black';
+        .attr('width', 100)
+        .attr('height', 30)
+        .attr('text-anchor', 'middle')
+        .attr('x', 0)
+        .attr('y', -10)
+        .attr('fill', function (d, i) {
+            return 'black';
         })
-        .style('font-size',10);
-    function started(d){
-        if(!d3.event.active){
-        forceSimulation.alphaTarget(0.8).restart();
+        .style('font-size', 10);
+    function started(d) {
+        if (!d3.event.active) {
+            forceSimulation.alphaTarget(0.8).restart();
         }
         d.fx = d.x;
         d.fy = d.y;
     }
-    function dragged(d){
+    function dragged(d) {
         d.fx = d3.event.x;
         d.fy = d3.event.y;
     }
-    function ended(d){
-        if(!d3.event.active){
-        forceSimulation.alphaTarget(0);
+    function ended(d) {
+        if (!d3.event.active) {
+            forceSimulation.alphaTarget(0);
         }
         d.fx = null;
         d.fy = null;
     }
-    function render(){
+    function render() {
         // 线的位置
-        links.attr('x1',function(d){
-        return validateXY(d.source.x,'x');
+        links.attr('x1', function (d) {
+            return validateXY(d.source.x, 'x');
         });
 
-        links.attr('y1',function(d){
-        return validateXY(d.source.y,'y');
+        links.attr('y1', function (d) {
+            return validateXY(d.source.y, 'y');
         });
 
-        links.attr('x2',function(d){
-        return validateXY(d.target.x,'x');
+        links.attr('x2', function (d) {
+            return validateXY(d.target.x, 'x');
         });
 
-        links.attr('y2',function(d){
-        return validateXY(d.target.y,'y');
+        links.attr('y2', function (d) {
+            return validateXY(d.target.y, 'y');
         });
         // 线上的文字的位置
-/*        linksText.attr('x',function(d){
-        return (d.source.x+d.target.x)/2;
-        })
-        linksText.attr('y',function(d){
-        return (d.source.y + d.target.y)/2;
-        })*/
+        /*        linksText.attr('x',function(d){
+                return (d.source.x+d.target.x)/2;
+                })
+                linksText.attr('y',function(d){
+                return (d.source.y + d.target.y)/2;
+                })*/
         //圆点的位置
-        gs.attr('transform',function(d,i){
-        return 'translate('+validateXY(d.x,'x')+','+validateXY(d.y,'y')+')';
+        gs.attr('transform', function (d, i) {
+            return 'translate(' + validateXY(d.x, 'x') + ',' + validateXY(d.y, 'y') + ')';
         })
     }
-    function validateXY(val,type){
+    function validateXY(val, type) {
         var r = 20;
-        if(val < r) return r;
-        if(type=='x'){
-            if(val < 0) return r;
-            if(val>width) return width-r;
-        }else{
-            if(val < 0) return r;
-            if(val > height) return height-r;
+        if (val < r) return r;
+        if (type == 'x') {
+            if (val < 0) return r;
+            if (val > width) return width - r;
+        } else {
+            if (val < 0) return r;
+            if (val > height) return height - r;
         }
         return val;
     }

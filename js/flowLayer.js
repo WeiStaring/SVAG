@@ -106,7 +106,7 @@ function initPieLayer() {
                 .call(text => text.append("tspan")
                     .attr("y", "0.2em")
                     .attr("fill-opacity", 1)
-                    .text((d, i) => ~~(d.flow/12)));
+                    .text((d, i) => ~~(d.flow / 12)));
 
             //绘制内层环形
             selection.selectAll(".inner-path")
@@ -131,7 +131,7 @@ function initPieLayer() {
                 .attr("text-anchor", "middle")
                 .call(text => text.append("tspan")
                     .attr("y", "0.2em")
-                    .attr("fill","white")
+                    .attr("fill", "white")
                     .attr("fill-opacity", 1)
                     .text((d, i) => i));
         }, {
@@ -156,35 +156,42 @@ function changeHeatmapData() {
 
     //获取t时刻的数据
     let spaceVolumeNowData = [];
+    let maxValue = -1;
     for (let j in spaceVolumeData[t]) {
-        spaceVolumeNowData.push({'lat':stationBoxesMap[j].latitude, 'lon':stationBoxesMap[j].longitude, 'value':spaceVolumeData[t][j]});
+        maxValue = Math.max(maxValue, spaceVolumeData[t][j]);
+        spaceVolumeNowData.push({ 'lat': stationBoxesMap[j].latitude, 'lng': stationBoxesMap[j].longitude, 'value': spaceVolumeData[t][j] });
     }
 
-    //添加热力图层
-    let heatmap = L.heatLayer(spaceVolumeNowData, {
-        minOpacity: 0.5,
-        maxZoom: 15,
-        // max: 1.0,
-        radius: 12,
-        blur: 10,
-        scaleRadius:true,
-        useLocalExtrema:true,
+    var cfg = {
+        "radius": 0.08,
+        "maxOpacity": .8,
+        "scaleRadius": true,
+        "useLocalExtrema": false,
         latField: 'lat',
-        // which field name in your data represents the longitude - default "lng"
         lngField: 'lng',
-        // which field name in your data represents the data value - default "value"
-        valueField: 'value'
+        valueField: 'value',
+        //自定义颜色
+        // gradient: {
+        //     .4: "blue",
+        //     .6: "cyan",
+        //     .7: "lime",
+        //     .8: "yellow",
+        //     1: "red",
+        // },
+    };
+    var heatmap = new HeatmapOverlay(cfg);
+    heatmap.setData({
+        max: maxValue,
+        data: spaceVolumeNowData,
     });
-    // map.on("zoomend", function(){
-    //     heatmap.setOptions({radius: map.getZoom()});
-    // });
     heatmapLayer.addLayer(heatmap);
+
 }
 
 function drawMatrixPlot() {
     function makeMatrixData() {
-        let res=[];
-        for(let row in temporalFlowData){
+        let res = [];
+        for (let row in temporalFlowData) {
             res.push(temporalFlowData[row])
         }
         return res;
@@ -192,121 +199,121 @@ function drawMatrixPlot() {
     cleanInfoDown();
     d3.select('#info_frame_down_title')
         .text('矩阵图');
-    let margin={left:25,top:25,right:25,bottom:25};
+    let margin = { left: 25, top: 25, right: 25, bottom: 25 };
     let info_svg_down = d3.select("#info_frame_down").append('svg');
     const width = info_svg_down.node().parentNode.clientWidth;
     const height = info_svg_down.node().parentNode.clientHeight;
     info_svg_down
-        .attr('width',width)
-        .attr('height',height-margin.top)
-        .attr('transform','translate(0,-10)');
+        .attr('width', width)
+        .attr('height', height - margin.top)
+        .attr('transform', 'translate(0,-10)');
 
     let linear = d3.scaleLinear()
         .domain([0, 30])
         .range([0, 1]);
-    let color = d3.interpolate('white','red');
+    let color = d3.interpolate('white', 'red');
     let mat = makeMatrixData();
-    console.log(mat);
+    // console.log(mat);
     //draw
     let matG = info_svg_down.append('g')
-        .attr('transform',`translate(${margin.left},${margin.right})`);
-    let cellSizeX=1.5,cellSizeY=14;
-    for(let i=0;i<mat.length;i++){
-        for(let j=0;j<mat[0].length;j++){
+        .attr('transform', `translate(${margin.left},${margin.right})`);
+    let cellSizeX = 1.5, cellSizeY = 14;
+    for (let i = 0; i < mat.length; i++) {
+        for (let j = 0; j < mat[0].length; j++) {
             matG.append("rect")
                 .attr("width", cellSizeY)
                 .attr("height", cellSizeX)
                 .attr("x", j * cellSizeY)
                 .attr("y", i * cellSizeX)
                 .attr("fill", color(linear(mat[i][j])))
-                .attr('stroke-width',0.1);
+                .attr('stroke-width', 0.1);
         }
     }
     let textG = info_svg_down.append('g')
-        .attr('transform',`translate(${margin.left},${margin.top})`);
+        .attr('transform', `translate(${margin.left},${margin.top})`);
     textG.selectAll('text')
-        .data([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23])
+        .data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23])
         .enter()
         .append('text')
         .text(function (d) {
             return d;
-        }).attr('transform',function (d,i) {
-            if(i<10)
-                return `translate(${i*cellSizeY+6},${0})`;
+        }).attr('transform', function (d, i) {
+            if (i < 10)
+                return `translate(${i * cellSizeY + 6},${0})`;
             else
-                return `translate(${i*cellSizeY+3},${0})`;
+                return `translate(${i * cellSizeY + 3},${0})`;
 
-    }).style('font-size',10);
+        }).style('font-size', 10);
 }
 
 function drawBarPlot() {
     clearInfoUp();
-    let margin={left:25,top:25,right:25,bottom:25};
+    let margin = { left: 25, top: 25, right: 25, bottom: 25 };
     d3.select('#info_frame_up_title')
         .text('柱状图');
     let info_svg_up = d3.select("#info_frame_up").append('svg');
     const width = info_svg_up.node().parentNode.clientWidth;
-    const height = info_svg_up.node().parentNode.clientHeight-margin.top;
+    const height = info_svg_up.node().parentNode.clientHeight - margin.top;
     info_svg_up
-        .attr('width',width)
-        .attr('height',height)
-        .attr('transform','translate(0,0)');
+        .attr('width', width)
+        .attr('height', height)
+        .attr('transform', 'translate(0,0)');
 
-    function makeBarData(){
+    function makeBarData() {
         let data = [];
         let t = curTime;
-        for(let key in spaceVolumeData[t]){
-            data.push([key,spaceVolumeData[t][key]])
+        for (let key in spaceVolumeData[t]) {
+            data.push([key, spaceVolumeData[t][key]])
         }
-        data = data.sort(function (a,b) {
-            return b[1]-a[1];
+        data = data.sort(function (a, b) {
+            return b[1] - a[1];
         });
         return data;
     }
     let data = makeBarData();
-    let xScale = d3.scaleBand().domain(d3.range(data.length)).range([0,width-margin.left-margin.left]);
-    let yScale = d3.scaleLinear().domain([0,d3.max(data,d=>d[1])+1]).range([0,height-margin.top-margin.bottom]);
-    let rectPad=10;
+    let xScale = d3.scaleBand().domain(d3.range(data.length)).range([0, width - margin.left - margin.left]);
+    let yScale = d3.scaleLinear().domain([0, d3.max(data, d => d[1]) + 1]).range([0, height - margin.top - margin.bottom]);
+    let rectPad = 10;
     info_svg_up.append('g')
-        .attr('transform',`translate(${margin.left},${margin.top})`)
+        .attr('transform', `translate(${margin.left},${margin.top})`)
         .selectAll('rect')
         .data(data)
         .enter()
         .append('rect')
         .attr("width", rectPad)
-        .attr("height", function (d,i) {
+        .attr("height", function (d, i) {
             return yScale(d[1]);
         })
-        .attr("x", function (d,i) {
+        .attr("x", function (d, i) {
             return xScale(i) + rectPad / 2;
         })
-        .attr("y", function (d,i) {
-            return height - margin.top - margin.bottom- yScale(d[1]);
+        .attr("y", function (d, i) {
+            return height - margin.top - margin.bottom - yScale(d[1]);
         })
-        .attr('fill','white');
+        .attr('fill', 'white');
     info_svg_up.append('g')
-        .attr('transform',`translate(${margin.left},${height-margin.top})`)
+        .attr('transform', `translate(${margin.left},${height - margin.top})`)
         .selectAll('text')
         .data(data)
         .enter()
         .append('text')
         .text(function (d) {
             return d[0];
-        }).attr('transform',function (d,i) {
+        }).attr('transform', function (d, i) {
             return `translate(${xScale(i) + rectPad / 2},${10})`;
-    }).style('font-size',10);
+        }).style('font-size', 10);
 
     info_svg_up.append('g')
-        .attr('transform',`translate(${margin.left},${margin.top})`)
+        .attr('transform', `translate(${margin.left},${margin.top})`)
         .selectAll('text')
         .data(data)
         .enter()
         .append('text')
         .text(function (d) {
             return d[1];
-        }).attr('transform',function (d,i) {
-        return `translate(${xScale(i) + rectPad / 2},${height - margin.top - margin.bottom- yScale(d[1])-10})`;
-    }).style('font-size',10);
+        }).attr('transform', function (d, i) {
+            return `translate(${xScale(i) + rectPad / 2},${height - margin.top - margin.bottom - yScale(d[1]) - 10})`;
+        }).style('font-size', 10);
 }
 //更新t时刻的特定地点时序流量图层
 function changeTemporalFlowData() {
@@ -334,47 +341,59 @@ function changeTemporalFlowData() {
     let pieLayerGroup = pieLayer.getLayers();
 
     //添加方格图层
-    stationBoxesMap.forEach((plott, i) => {
-        const html = `<div class="popup">` +
-            `<p>Lat:${plott.latitude}</p>` +
-            `<p>Lng:${plott.longitude}</p>` +
-            `<p>id:${plott.id}</p>` +
-            `<p>rank:${rankList[plott.id]}</p>` +
-            `<p>volume:${(plott.id in spaceVolumeData[t]) ? spaceVolumeData[t][plott.id] : 0}</p>` +
-            `</div>`;
-        let circleMarker = L.circleMarker([plott.latitude, plott.longitude], {
-            radius: 2,
-            fillColor: "white",
-            color: "grey",
-            weight: 1,
-            opacity: 0.5,
-            fillOpacity: 0.5,
-            isClick: false,
-        })
-            .bindTooltip(html, { sticky: true })
-            .on("click", function (e) {
-                if (e.target.options.isClick == false) {
-                    L.setOptions(e.target, { "isClick": true, });
-                    e.target.setStyle({
-                        radius: 5,
-                        fillColor: 'orange',
-                        color: "orange",
-                    });
-                    temporalFlowLayer.addLayer(pieLayerGroup[plott.id]);
+    let circleMarker = L.d3SvgOverlay(function (selection, projection) {
+        var geojsonBox = [];
+        for (let i = 0; i < stationBoxesMap.length; i++) {
+            let tmp = {
+                "type": "Feature",
+                "properties": {
+                    "id": stationBoxesMap[i].id,
+                    "isClick": false,
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [stationBoxesMap[i].longitude, stationBoxesMap[i].latitude],
+                }
+            };
+            geojsonBox.push(tmp);
+        }
+
+        selection.selectAll('path')
+            .data(geojsonBox)
+            .join('path')
+            .attr("class", "boxCircle")
+            .attr('d', projection.pathFromGeojson)
+            .style('fill', "white")
+            .style('stroke', "grey")
+            .style('opacity', '0.5')
+            .style('stroke-width', d => {
+                d.properties.width = 2 / projection.scale;
+                return 2 / projection.scale;
+            })
+            .on("click", function (d) {
+                if (d.properties.isClick == false) {
+                    d.properties.isClick = true;
+                    d3.select(this)
+                        .style('fill', "orange")
+                        .style('stroke', "orange");
+                    temporalFlowLayer.addLayer(pieLayerGroup[d.properties.id]);
                 }
                 else {
-                    L.setOptions(e.target, { "isClick": false, });
-                    e.target.setStyle({
-                        radius: 3,
-                        fillColor: "white",
-                        color: "grey",
-                    });
-                    temporalFlowLayer.removeLayer(pieLayerGroup[plott.id]);
+                    d.properties.isClick = false;
+                    d3.select(this)
+                        .style('fill', "white")
+                        .style('stroke', "grey");
+                    temporalFlowLayer.removeLayer(pieLayerGroup[d.properties.id]);
                 }
             });
-
-        boxMarkerLayer.addLayer(circleMarker);
+    }, {
+        "zoomDraw": false,
+        "zoomAble": true,
+        "interactive": true,
     });
+
+    boxMarkerLayer.addLayer(circleMarker);
+
     drawBarPlot();
 }
 

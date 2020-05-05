@@ -37,7 +37,7 @@ svgTime.append("g").attr("transform", "translate(" + xScale.range()[0] + ",10)")
     .call(yAxis);
 
 function drawArea() {
-    console.log(sumFlowData);
+    // console.log(sumFlowData);
     d3.selectAll(".time-area").remove();
     svgTime.append("g")
         .selectAll('path')
