@@ -9,6 +9,7 @@
     <link rel="shortcut icon" href="#" />
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/axis.css">
     <link rel="stylesheet" href="css/time.css">
     <link rel="stylesheet" href="css/task.css">
     <link rel="stylesheet" href="css/info.css">
@@ -18,9 +19,11 @@
     <script src="js/utils/d3.v5.min.js"></script>
     <script src="js/utils/jquery.js"></script>
     <script src="js/utils/leaflet.js"></script>
-    <script src="js/utils/leaflet-heat.js"></script>
+    <script src="js/utils/heatmap.js"></script>
+    <script src="js/utils/leaflet-heatmap.js"></script>
     <script src="js/utils/leaflet-legend.js"></script>
     <script src="js/utils/leaflet-d3-SvgOverlay.js"></script>
+
 </head>
 
 <body>
@@ -41,7 +44,7 @@
             </div>
         </div>
         <div class="time-frame">
-            <button class="time-title"></button>
+            <button class="time-title"><span>流量时序轴</span></button>
             <div class="time-slider"></div>
             <div class="time-value"></div>
             <div class="time-clock">
@@ -53,6 +56,7 @@
     </div>
 
 </body>
+
 <script src="js/utils/utils.js"></script>
 <script src="js/getData.js"></script>
 <script src="js/flowLayer.js"></script>

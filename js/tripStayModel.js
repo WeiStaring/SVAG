@@ -117,7 +117,7 @@ function tripStayinfo(plot = 0) {
         .attr("dy", -6)
         .attr("dx", 110)
         .style("text-anchor", "start")
-        .text("驻留")
+        .text("流入")
         .attr('fill', 'white')
         .attr('font-size', '13')
         .attr("transform", "translate(" + 18 + "," + 20 + ")");
@@ -133,7 +133,7 @@ function tripStayinfo(plot = 0) {
         .attr("dy", -6)
         .attr("dx", 190)
         .style("text-anchor", "start")
-        .text("流入")
+        .text("流出")
         .attr('fill', 'white')
         .attr('font-size', '13')
         .attr("transform", "translate(" + 18 + "," + 20 + ")");
@@ -149,7 +149,7 @@ function tripStayinfo(plot = 0) {
         .attr("dy", -6)
         .attr("dx", 260)
         .style("text-anchor", "start")
-        .text("流出")
+        .text("驻留")
         .attr('fill', 'white')
         .attr('font-size', '13')
         .attr("transform", "translate(" + 18 + "," + 20 + ")");
@@ -184,9 +184,11 @@ function tripStayinfo(plot = 0) {
     var yAxis = d3.axisLeft(scale_y).ticks(5);
     var xAxis = d3.axisBottom(scale_x).ticks(5);
     info_svg_up.append('g')
+        .attr('class','axis')
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(xAxis);
     info_svg_up.append('g')
+        .attr('class','axis')
         .attr("transform", `translate(${margin.left},0)`)
         .call(yAxis);
 
@@ -198,28 +200,28 @@ function tripStayinfo(plot = 0) {
         .y(function (d) {
             return scale_y(d);
         })
-        .curve(d3.curveMonotoneX);
+        .curve(d3.curveBundle);
 
     info_svg_up.append('g').append("path")
         .attr("d", line_generator(tempTripInData))
         .style("stroke-width", 1)
         .style("stroke", '#e5a1a1')
         .style("fill", "none")
-        .style('stroke-opacity', 1);
+        .style('stroke-opacity', 0.7);
 
     info_svg_up.append('g').append("path")
         .attr("d", line_generator(tempTripOutData))
         .style("stroke-width", 1)
         .style("stroke", '#b2e0a1')
         .style("fill", "none")
-        .style('stroke-opacity', 1);
+        .style('stroke-opacity', 0.7);
 
     info_svg_up.append('g').append("path")
         .attr("d", line_generator(tempStayData))
         .style("stroke-width", 1)
         .style("stroke", '#91b7f1')
         .style("fill", "none")
-        .style('stroke-opacity', 1);
+        .style('stroke-opacity', 0.7);
 }
 
 function cleanTripLayer() {

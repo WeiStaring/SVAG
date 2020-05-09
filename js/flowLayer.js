@@ -23,21 +23,21 @@ function initPieLayer() {
         let temporalFlowNowData = temporalFlowData[plott.id];
 
         //pie
-        let outerHeightRange = [90, 110];
+        let outerHeightRange = [90, 120];
         let innerHeightRange = [70, 76];
         let pieOuterRadius = d3.scaleLinear()
-            .domain([d3.min(temporalFlowNowData), d3.max(temporalFlowNowData)])
+            .domain([Math.ceil(d3.min(temporalFlowNowData)/12), Math.ceil(d3.max(temporalFlowNowData)/12)])
             .range(outerHeightRange);
         let generator = d3.pie().value(1);
         let slices = generator(temporalFlowNowData);
         let outerData = slices.map((d, i) => {
             return {
                 innerRadius: innerHeightRange[1],
-                outerRadius: pieOuterRadius(temporalFlowNowData[i]),
+                outerRadius: pieOuterRadius(Math.ceil(temporalFlowNowData[i]/12)),
                 startAngle: d.startAngle,
                 endAngle: d.endAngle,
                 padAngle: 0.03,
-                flow: temporalFlowNowData[i],
+                flow: Math.ceil(temporalFlowNowData[i]/12),
                 time: i,
             };
         });
@@ -57,7 +57,7 @@ function initPieLayer() {
 
         //color
         let colScale = d3.scaleLinear()
-            .domain([d3.min(temporalFlowNowData), d3.max(temporalFlowNowData)])
+            .domain([Math.ceil(d3.min(temporalFlowNowData)/12), Math.ceil(d3.max(temporalFlowNowData)/12)])
             .range([0.2, 0.7]);
         let colorPie = d => {
             return d3.interpolateYlOrRd(colScale(d));
@@ -106,7 +106,7 @@ function initPieLayer() {
                 .call(text => text.append("tspan")
                     .attr("y", "0.2em")
                     .attr("fill-opacity", 1)
-                    .text((d, i) => ~~(d.flow / 12)));
+                    .text((d, i) => d.flow));
 
             //绘制内层环形
             selection.selectAll(".inner-path")
@@ -163,7 +163,7 @@ function changeHeatmapData() {
     }
 
     var cfg = {
-        "radius": 0.08,
+        "radius": 0.05,
         "maxOpacity": .8,
         "scaleRadius": true,
         "useLocalExtrema": false,
@@ -209,7 +209,7 @@ function drawMatrixPlot() {
         .attr('transform', 'translate(0,-10)');
 
     let linear = d3.scaleLinear()
-        .domain([0, 30])
+        .domain([0, 10])
         .range([0, 1]);
     let color = d3.interpolate('white', 'red');
     let mat = makeMatrixData();
@@ -217,7 +217,7 @@ function drawMatrixPlot() {
     //draw
     let matG = info_svg_down.append('g')
         .attr('transform', `translate(${margin.left},${margin.right})`);
-    let cellSizeX = 1.5, cellSizeY = 14;
+    let cellSizeX = 0.8, cellSizeY = 14;
     for (let i = 0; i < mat.length; i++) {
         for (let j = 0; j < mat[0].length; j++) {
             matG.append("rect")
@@ -235,13 +235,14 @@ function drawMatrixPlot() {
         .data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23])
         .enter()
         .append('text')
+        .attr("fill","white")
         .text(function (d) {
             return d;
         }).attr('transform', function (d, i) {
             if (i < 10)
-                return `translate(${i * cellSizeY + 6},${0})`;
+                return `translate(${i * cellSizeY + 6},${-2})`;
             else
-                return `translate(${i * cellSizeY + 3},${0})`;
+                return `translate(${i * cellSizeY + 3},${-2})`;
 
         }).style('font-size', 10);
 }
@@ -297,6 +298,7 @@ function drawBarPlot() {
         .data(data)
         .enter()
         .append('text')
+        .attr("fill","white")
         .text(function (d) {
             return d[0];
         }).attr('transform', function (d, i) {
@@ -309,6 +311,7 @@ function drawBarPlot() {
         .data(data)
         .enter()
         .append('text')
+        .attr("fill","white")
         .text(function (d) {
             return d[1];
         }).attr('transform', function (d, i) {

@@ -8,7 +8,7 @@ const width = svgTime.node().parentNode.clientWidth;
 const height = svgTime.node().parentNode.clientHeight;
 
 var timetitle=d3.select(".time-title");
-timetitle.text('时间轴');
+
 const h=timetitle.node().parentNode.clientHeight;
 
 let margin = {top: 10, right: 35, bottom: 30, left: 35};
@@ -30,15 +30,19 @@ var line = d3.line()
     .x(function (d) { return xScale(d.time); })
     .y(function (d) { return yScale(d.volume); });
 
-svgTime.append("g")
-    .attr("transform", "translate(0," + (yScale.range()[0]+10) + ")")
-    .call(xAxis);
-svgTime.append("g").attr("transform", "translate(" + xScale.range()[0] + ",10)")
-    .call(yAxis);
+
 
 function drawArea() {
-    // console.log(sumFlowData);
-    d3.selectAll(".time-area").remove();
+    console.log(sumFlowData);
+    svgTime.selectAll("g").remove();
+    svgTime.selectAll(".time-area").remove();
+    svgTime.append("g")
+        .attr("transform", "translate(0," + (yScale.range()[0]+10) + ")")
+        .attr('class', 'axis')
+        .call(xAxis);
+    svgTime.append("g").attr("transform", "translate(" + xScale.range()[0] + ",10)")
+        .attr('class', 'axis')
+        .call(yAxis);
     svgTime.append("g")
         .selectAll('path')
         // .data([sumFlowData.slice(0, curTime)])
