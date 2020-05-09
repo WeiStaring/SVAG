@@ -37,13 +37,22 @@ function changeTripStayData() {
         selection.selectAll('path')
             .data(geojsonBox)
             .join('path')
-            .attr("class", "boxCircle")
+            .attr("class", "boxCircleTripStayModel")
             .attr('d', projection.pathFromGeojson)
             .style('fill', "white")
             .style('stroke', "grey")
             .style('opacity', '0.5')
             .style('stroke-width', d => {
                 return d.properties.r / projection.scale;
+            })
+            .on("click", function (d) {
+                tripStayinfo(d.properties.id);
+                d3.selectAll(".boxCircleTripStayModel")
+                    .style('fill', "white")
+                    .style('stroke', "grey");
+                d3.select(this)
+                    .style('fill', "orange")
+                    .style('stroke', "orange");
             });
     }, {
         "zoomDraw": false,
