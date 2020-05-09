@@ -53,7 +53,7 @@ function drawArea() {
         .style("opacity", "0.8")
         .attr("fill", "none")
         .attr("transform", "translate(0,10)")
-        .attr("stroke", "#40a9ff")
+        .attr("stroke", "#a6e7dc")
         .attr("stroke-width", 1.5)
         .attr("stroke-linejoin", "round")
         .attr("stroke-linecap", "round");
@@ -65,7 +65,7 @@ function drawArea() {
         .attr("transform", "translate(0,10)")
         .attr('d', area)
         .style("opacity", "0.2")
-        .attr("fill", "#40a9ff");
+        .attr("fill", "#a6e7dc");
     svgTime.selectAll('circle')
         .data(sumFlowData)
         .join('circle')
@@ -78,7 +78,7 @@ function drawArea() {
         .attr('r', 2)
         .attr("transform", "translate(0,10)")
         .style("opacity", "1")
-        .attr("fill", "#ff4d4f");
+        .attr("fill", "#f8ff50");
 }
 
 let lineWidth = xScale(xScale.domain()[0].setMinutes(5)) - xScale.range()[0];
@@ -90,7 +90,7 @@ svgTime.append("line")
     .attr("x2", xScale.range()[0])
     .attr("y2", yScale.range()[1])//yScale(sumFlowData[curTime].volume)
     .style("opacity", "1")
-    .attr("stroke", "#ff3b3b")
+    .attr("stroke", "#a6e7dc")
     .attr("transform", "translate(0,10)")
     .attr("stroke-width", lineWidth * 1)
     .call(d3.drag()
@@ -133,7 +133,7 @@ var clockBtn = d3.select(".clock-btn")
         if (d3.select(".clock-btn").classed("icon-play") == true) {
             d3.select(".clock-btn").classed("icon-play", false);
             d3.select(".clock-btn").classed("icon-pause", true);
-            clock = setInterval(addClock, 1000 / speed);
+            clock = setInterval(addClock, 500 / speed);
         } else {
             d3.select(".clock-btn").classed("icon-play", true);
             d3.select(".clock-btn").classed("icon-pause", false);
@@ -146,7 +146,7 @@ var speedCutBtn = d3.select(".speed-cut-btn")
         if (d3.select(".clock-btn").classed("icon-play") == false) {
             speed = Math.max(1, Math.ceil(speed / 2));
             clearInterval(clock);
-            clock = setInterval(addClock, 1000 / speed);
+            clock = setInterval(addClock, 500 / speed);
         }
     });
 //加速按钮
@@ -155,7 +155,7 @@ var speedUpBtn = d3.select(".speed-up-btn")
         if (d3.select(".clock-btn").classed("icon-play") == false) {
             speed = Math.min(60, speed * 2);
             clearInterval(clock);
-            clock = setInterval(addClock, 1000 / speed);
+            clock = setInterval(addClock, 500 / speed);
         }
     });
 

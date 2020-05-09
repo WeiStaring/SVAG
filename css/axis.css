@@ -10,3 +10,17 @@
     font-family: sans-serif;
     font-size: 11px;
 }
+
+.domain{
+    fill: none;
+    stroke: white;
+    shape-rendering: crispEdges;	
+}
+
+.tick line{
+	stroke:white;
+}
+
+.tick text{
+	fill:white;
+}

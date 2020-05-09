@@ -13,6 +13,7 @@
     width: 10%;
     height: 40%;
     box-sizing: border-box;
+    color: white;
     /* border: 1px solid grey; */
     float: left;
     display:flex;
@@ -24,6 +25,7 @@
     width: 10%;
     height: 60%;
     box-sizing: border-box;
+    color: white;
     /* border: 1px solid grey; */
     float: left;
     background:none;

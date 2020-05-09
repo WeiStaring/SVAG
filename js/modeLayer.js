@@ -293,12 +293,12 @@ function drawParaAxis(data) {
             .attr("x", width-margin.left-60)
             .attr("y", -6)
             .attr("text-anchor", "start")
-            .attr("fill", "currentColor")
+            .attr("fill", "white")
             .text(d => d))
         .call(g => g.selectAll("text")
             .clone(true).lower()
             .attr("fill", "none")
-            .attr("stroke-width", 5)
+            .attr("stroke-width", 0.5)
             .attr("stroke-linejoin", "round")
             .attr("stroke", "white"));
 

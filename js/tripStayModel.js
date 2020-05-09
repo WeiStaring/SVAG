@@ -328,7 +328,7 @@ function drawForceDirectedGraph() {
             .attr("stroke-width", 2)//箭头宽度
             .append("path")
             .attr("d", "M0,-5L10,0L0,5")//箭头的路径
-            .attr('fill', '#000000');//箭头颜色
+            .attr('fill', '#FFFFFF');//箭头颜色
     // 边
     var links = g.append('g')
         .selectAll('line')
@@ -336,7 +336,7 @@ function drawForceDirectedGraph() {
         .enter()
         .append('line')
         .attr('stroke', function (d, i) {
-            return 'black';
+            return 'white';
         })
         .attr('stroke-width', function (d, i) {
             return d.value;
@@ -360,7 +360,7 @@ function drawForceDirectedGraph() {
             return d.stay * 2;
         })
         .attr('fill', function (d, i) {
-            return '#ccc';
+            return '#a6e7dc';
         });
     gs.append('text')
         .text(function (d, i) {
@@ -372,7 +372,7 @@ function drawForceDirectedGraph() {
         .attr('x', 0)
         .attr('y', -10)
         .attr('fill', function (d, i) {
-            return 'black';
+            return 'white';
         })
         .style('font-size', 10);
     function started(d) {
