@@ -159,8 +159,8 @@ function drawInfoTable() {
         .style('font-size', '12px')
         .text(d => d.id.substr(10,8))
         .on("click", function (d) {
-            d3.selectAll("#liName").style('background', "white");
-            d3.select(this).style('background', "rgb(215, 228, 233)").attr("isClick", "true");
+            d3.selectAll("#liName").style('color', "black");
+            d3.select(this).style('color', "rgb(215, 228, 233)").attr("isClick", "true");
             curUser = d.id;
             modeLayerGroup.clearLayers();
             modeLayerGroup.addLayer(personTrackLayer.getLayers()[userLayerMap[curUser]]);
