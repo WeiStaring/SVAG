@@ -79,16 +79,72 @@ function changeTripStayData() {
         tripLineList.push(tripLine);
     }
     let tripSvgLayer = L.d3SvgOverlay(function (selection, projection) {
-        selection.selectAll('path')
-            .data(tripLineList)
-            .join('path')
-            .attr('d', projection.pathFromGeojson)
-            .style('stroke', 'white')
-            .style('opacity', '0.75')
-            .style('stroke-width', d => {
-                d.properties.width = d.properties.weight * 2 / projection.scale;
-                return d.properties.width;
-            });
+        // selection.selectAll('path')
+        //     .data(tripLineList)
+        //     .join('path')
+        //     .attr('d', projection.pathFromGeojson)
+        //     .style('stroke', 'white')
+        //     .style('opacity', '0.75')
+        //     .style('stroke-width', d => {
+        //         d.properties.width = d.properties.weight * 2 / projection.scale;
+        //         return d.properties.width;
+        //     });
+
+        let defs = selection.append("defs");
+        for(let i=0;i<tripLineList.length;i++) {
+            let pos = tripLineList[i].geometry.coordinates;
+            let x1 = 0, y1 = 0, x2 = 0, y2 = 0;
+            if (pos[0][0] > pos[1][0]) {
+                x1 = 100;
+            } else {
+                x2 = 100;
+            }
+            if (pos[0][1] > pos[1][1]) {
+                y2 = 100;
+            } else {
+                y1 = 100;
+            }
+
+            let linerGradient = defs.append("linearGradient")
+                .attr("id", "linearColor" + i)
+                .attr("x1", x1 + "%")
+                .attr("y1", y1 + "%")
+                .attr("x2", x2 + "%")
+                .attr("y2", y2 + "%");
+            linerGradient.append("stop")
+                .attr("offset", "0%")
+                .style("stop-color", d3.rgb('white').toString());
+            linerGradient.append("stop")
+                .attr("offset", "100%")
+                .style("stop-color", d3.rgb('red').toString());
+
+            selection.append('g').selectAll('path')
+                .data([tripLineList[i]])
+                .enter()
+                .append('path')
+                .attr('d', function (d){
+                    let pos = tripLineList[i].geometry.coordinates;
+                    let objString = JSON.stringify(d);
+                    let res = JSON.parse(objString);
+                    if (pos[0][0] == pos[1][0]){
+                        res.geometry.coordinates[1][0]+=0.001
+                    }else if(pos[0][1] == pos[1][1]){
+                        res.geometry.coordinates[1][1]+=0.001
+                    }
+                    return projection.pathFromGeojson(res);
+                })
+                // .attr('stroke', 'white')
+                .attr("stroke", "url(#" + linerGradient.attr("id") + ")")
+                .style('opacity', function (d) {
+                    return 0.75;
+                })
+                .style('stroke-width', d => {
+                    d.properties.width = d.properties.weight * 2 / projection.scale;
+                    console.log(d.properties.width,d.properties.weight,projection.scale);
+                    return d.properties.width;
+                });
+        }
+
     }, {
         "zoomDraw": false,
         "zoomAble": true,
@@ -276,7 +332,7 @@ function drawForceDirectedGraph() {
         };
         nodes.push(nd);
     }
-    console.log(nodes);
+
     let map = new Map();
     let cnt = 0;
     for (let val of set.values()) {
