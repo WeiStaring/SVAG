@@ -238,6 +238,9 @@ function tripStayinfo(plot = 0) {
         }
     }
 
+    // var scale_x = d3.scaleTime()
+    //     .domain([new Date(2018, 9, 3, 0, 0, 0), new Date(2018, 9, 3, 24, 0, 0)])
+    //     .range([margin.left, width - margin.right]);
     var scale_x = d3.scaleLinear()
         .domain([0, 288])
         .range([margin.left, width - margin.right]);
@@ -354,7 +357,7 @@ function drawForceDirectedGraph() {
     // 新建力导向图
     var forceSimulation = d3.forceSimulation()
         .force('link', d3.forceLink())
-        .force('charge', d3.forceManyBody())
+        .force('charge', d3.forceManyBody().strength(-5))/*.distanceMax(10000).distanceMin(10000))*/
         .force('center', d3.forceCenter());
     // 生成节点
     forceSimulation.nodes(nodes)

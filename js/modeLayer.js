@@ -10,13 +10,13 @@ var colType = d => {
     d = parseInt(d);
     switch (d) {
         case 1:
-            return "red";
+            return "#ADFFE4";
         case 2:
-            return "orange";
+            return "#FDFFAD";
         case 3:
-            return "green";
+            return "#E6B1FF";
         case 4:
-            return "blue";
+            return "#FF716A";
         default:
             return "grey";
     }
@@ -31,8 +31,8 @@ var colorLegend = L.control.legend({
             label: 'Car',
             html: '',
             style: {
-                'background-color': 'red',
-                'opacity': '0.8',
+                'background-color': '#ADFFE4',
+                // 'opacity': '0.8',
                 'width': '10px',
                 'height': '10px',
                 'border': '0.5px solid black',
@@ -41,8 +41,8 @@ var colorLegend = L.control.legend({
             label: 'Walk',
             html: '',
             style: {
-                'background-color': 'orange',
-                'opacity': '0.8',
+                'background-color': '#FDFFAD',
+                // 'opacity': '0.8',
                 'width': '10px',
                 'height': '10px',
                 'border': '0.5px solid black',
@@ -51,8 +51,8 @@ var colorLegend = L.control.legend({
             label: 'Bike',
             html: '',
             style: {
-                'background-color': 'green',
-                'opacity': '0.8',
+                'background-color': '#E6B1FF',
+                // 'opacity': '0.8',
                 'width': '10px',
                 'height': '10px',
                 'border': '0.5px solid black',
@@ -61,8 +61,8 @@ var colorLegend = L.control.legend({
             label: 'Bus',
             html: '',
             style: {
-                'background-color': 'blue',
-                'opacity': '0.8',
+                'background-color': '#FF716A',
+                // 'opacity': '0.8',
                 'width': '10px',
                 'height': '10px',
                 'border': '0.5px solid black',
@@ -93,7 +93,7 @@ function initTrackLayer() {
                 .attr("class", "user-path")
                 .attr('d', projection.pathFromGeojson)
                 .style('stroke', d => colType(d.properties.type))
-                .style('opacity', '0.5')
+                // .style('opacity', '0.5')
                 .style('stroke-width', d => {
                     d.properties.width = 2 / projection.scale;
                     return 2 / projection.scale;
@@ -189,7 +189,7 @@ function drawInfoTable() {
         .attr("x2", d => xScaleTemp(d.properties.endTime))
         .attr("y2", 2)
         .attr("transform", "translate(0,10)")
-        .style("opacity", "0.5")
+        // .style("opacity", "0.5")
         .attr("stroke", d => colType(d.properties.type))
         .attr("stroke-width", 20);
     return dataTemp;
