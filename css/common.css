@@ -140,3 +140,15 @@ table tr:nth-child(even) {
     overflow: hidden;
     margin: 5px 5px 5px 5px;
 }
+
+.tooltips{
+    position: absolute;
+    height: auto;
+    font-family: "microsoft yahei", simhei;
+    font-size: 10px;
+    text-align: center;
+    border: 1px solid #999;
+    padding: 2px;
+    background-color: white;
+    border-radius: 3px;
+}

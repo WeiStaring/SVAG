@@ -208,6 +208,10 @@ function drawMatrixPlot() {
         .attr('height', height - margin.top)
         .attr('transform', 'translate(0,-10)');
 
+    let zoomG = info_svg_down.append('g');
+    let zoom = d3.zoom().on("zoom", function () {
+        zoomG.attr("transform", d3.event.transform)});
+    info_svg_down.call(zoom).on('dblclick.zoom',null);
     let linear = d3.scaleLinear()
         .domain([0, 10])
         .range([0, 1]);
@@ -215,7 +219,12 @@ function drawMatrixPlot() {
     let mat = makeMatrixData();
     // console.log(mat);
     //draw
-    let matG = info_svg_down.append('g')
+    let tooltip = d3.select("#info_frame_down")
+        .append("div")//添加div并设置成透明
+        .attr("class","tooltips")
+        .style("opacity",0.0);
+
+    let matG = zoomG.append('g')
         .attr('transform', `translate(${margin.left},${margin.right})`);
     let cellSizeX = 0.8, cellSizeY = 14;
     for (let i = 0; i < mat.length; i++) {
@@ -226,10 +235,20 @@ function drawMatrixPlot() {
                 .attr("x", j * cellSizeY)
                 .attr("y", i * cellSizeX)
                 .attr("fill", color(linear(mat[i][j])))
-                .attr('stroke-width', 0.1);
+                .attr('stroke-width', 0.1)
+                .on("mouseover",function(d){
+                    set_tooltip(i,j,mat[i][j]);
+                })
+                .on("mousemove",function(d){
+                    tooltip.style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY + 20) + "px");
+                })
+                .on("mouseout",function(d){
+                    tooltip.style("opacity",0.0);
+                });
         }
     }
-    let textG = info_svg_down.append('g')
+    let textG = zoomG.append('g')
         .attr('transform', `translate(${margin.left},${margin.top})`);
     textG.selectAll('text')
         .data([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23])
@@ -245,7 +264,16 @@ function drawMatrixPlot() {
                 return `translate(${i * cellSizeY + 3},${-2})`;
 
         }).style('font-size', 10);
+
+    function set_tooltip(i,j,d){//设置提示内容
+        tooltip.html('地区'+i+'时间'+(j*0.5)+'流量'+d)
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY + 20) + "px")
+            .style("opacity",1.0);
+    }
 }
+
+
 
 function drawBarPlot() {
     clearInfoUp();
