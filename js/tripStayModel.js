@@ -79,17 +79,6 @@ function changeTripStayData() {
         tripLineList.push(tripLine);
     }
     let tripSvgLayer = L.d3SvgOverlay(function (selection, projection) {
-        // selection.selectAll('path')
-        //     .data(tripLineList)
-        //     .join('path')
-        //     .attr('d', projection.pathFromGeojson)
-        //     .style('stroke', 'white')
-        //     .style('opacity', '0.75')
-        //     .style('stroke-width', d => {
-        //         d.properties.width = d.properties.weight * 2 / projection.scale;
-        //         return d.properties.width;
-        //     });
-
         let defs = selection.append("defs");
         for(let i=0;i<tripLineList.length;i++) {
             let pos = tripLineList[i].geometry.coordinates;
@@ -250,8 +239,12 @@ function tripStayinfo(plot = 0) {
     // 画轴
 
     var yAxis = d3.axisLeft(scale_y).ticks(5);
-    var xAxis = d3.axisBottom(scale_x).ticks(5);
-    info_svg_up.append('g')
+
+    let timeScale = d3.scaleTime()
+        .domain([new Date(2018, 9, 3, 0, 0, 0), new Date(2018, 9, 3, 24, 0, 0)])//d3.extent(sumFlowData, d => d.time)
+        .range([margin.left, width-margin.right]);
+    let xAxis = d3.axisBottom(timeScale).ticks(d3.timeHour.every(4)).tickFormat(d3.timeFormat("%H:%M"));
+    info_svg_up.append("g")
         .attr('class','axis')
         .attr("transform", `translate(0,${height - margin.bottom})`)
         .call(xAxis);

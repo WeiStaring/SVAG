@@ -19,7 +19,7 @@ var yScale = d3.scaleLinear()
     .domain([0, d3.max(sumFlowData, d => d.volume)])
     .range([height-margin.bottom, margin.top]);
 
-var xAxis = d3.axisBottom(xScale).ticks(d3.timeHour.every(1)).tickFormat(d3.timeFormat("%H:%M"));
+var xAxis = d3.axisBottom(xScale).ticks(d3.timeHour.every(2)).tickFormat(d3.timeFormat("%H:%M"));
 var yAxis = d3.axisLeft(yScale).ticks(5).tickSizeOuter(0).tickSize(2);
 
 var area = d3.area()

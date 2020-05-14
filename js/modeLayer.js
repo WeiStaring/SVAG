@@ -283,25 +283,34 @@ function drawParaAxis(data) {
             return line(d3.cross(keys, [d], (key, d) => [key, d[key]]))
         });
     //画轴
-    svg.append("g")
+    let axisG = svg.append("g");
+    axisG
         .selectAll("g")
-        .data(keys)
+        .data(keys.slice(0,3))
         .join("g")
         .attr("transform", d => `translate(0,${y(d)})`)
-        .each(function(d) { d3.select(this).call(d3.axisBottom(x.get(d)).ticks(5)); })
+        .each(function(d) {
+            d3.select(this).call(d3.axisBottom(x.get(d)).ticks(5));
+        })
         .call(g => g.append("text")
-            .attr("x", width-margin.left-60)
+            .attr("x", width-margin.left)
             .attr("y", -6)
-            .attr("text-anchor", "start")
+            .attr("text-anchor", "end")
             .attr("fill", "white")
-            .text(d => d))
-        .call(g => g.selectAll("text")
-            .clone(true).lower()
-            .attr("fill", "none")
-            .attr("stroke-width", 0.5)
-            .attr("stroke-linejoin", "round")
-            .attr("stroke", "white"));
-
+            .text(d => d));
+    let typeScale = d3.scaleBand().domain(['car','walk','bike','bus'])
+        .range([margin.left, width - margin.right])
+        .paddingOuter(-0.5);
+    let typeAxis = d3.axisBottom(typeScale);
+    axisG.append('g')
+        .attr("transform", `translate(0,${y('type')})`)
+        .call(typeAxis)
+        .call(g => g.append("text")
+            .attr("x", width-margin.left)
+            .attr("y", -6)
+            .attr("text-anchor", "end")
+            .attr("fill", "white")
+            .text('type'));
 
 }
 
